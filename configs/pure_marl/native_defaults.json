@@ -1,0 +1,357 @@
+{
+  "benchmarl/benchmarl/conf/algorithm/masac.yaml": {
+    "defaults": [
+      "masac_config",
+      "_self_"
+    ],
+    "share_param_critic": true,
+    "num_qvalue_nets": 2,
+    "loss_function": "l2",
+    "delay_qvalue": true,
+    "target_entropy": "auto",
+    "discrete_target_entropy_weight": 0.2,
+    "alpha_init": 1.0,
+    "min_alpha": null,
+    "max_alpha": null,
+    "fixed_alpha": false,
+    "scale_mapping": "biased_softplus_1.0",
+    "use_tanh_normal": true,
+    "coupled_discrete_values": true
+  },
+  "benchmarl/benchmarl/conf/experiment/base_experiment.yaml": {
+    "defaults": [
+      "experiment_config",
+      "_self_"
+    ],
+    "sampling_device": "cpu",
+    "train_device": "cpu",
+    "buffer_device": "cpu",
+    "share_policy_params": true,
+    "prefer_continuous_actions": true,
+    "collect_with_grad": false,
+    "parallel_collection": false,
+    "gamma": 0.99,
+    "lr": 5e-05,
+    "adam_eps": 1e-06,
+    "adam_extra_kwargs": {},
+    "clip_grad_norm": true,
+    "clip_grad_val": 5,
+    "soft_target_update": true,
+    "polyak_tau": 0.005,
+    "hard_target_update_frequency": 5,
+    "exploration_eps_init": 0.8,
+    "exploration_eps_end": 0.01,
+    "exploration_anneal_frames": null,
+    "max_n_iters": null,
+    "max_n_frames": 3000000,
+    "on_policy_collected_frames_per_batch": 6000,
+    "on_policy_n_envs_per_worker": 10,
+    "on_policy_n_minibatch_iters": 45,
+    "on_policy_minibatch_size": 400,
+    "off_policy_collected_frames_per_batch": 6000,
+    "off_policy_n_envs_per_worker": 10,
+    "off_policy_n_optimizer_steps": 1000,
+    "off_policy_train_batch_size": 128,
+    "off_policy_memory_size": 1000000,
+    "off_policy_init_random_frames": 0,
+    "off_policy_use_prioritized_replay_buffer": false,
+    "off_policy_prb_alpha": 0.6,
+    "off_policy_prb_beta": 0.4,
+    "evaluation": true,
+    "render": true,
+    "evaluation_interval": 120000,
+    "evaluation_episodes": 10,
+    "evaluation_deterministic_actions": true,
+    "evaluation_static": false,
+    "loggers": [
+      "csv",
+      "wandb"
+    ],
+    "project_name": "benchmarl",
+    "wandb_extra_kwargs": {},
+    "create_json": true,
+    "save_folder": null,
+    "restore_file": null,
+    "restore_map_location": null,
+    "checkpoint_interval": 0,
+    "checkpoint_at_end": false,
+    "keep_checkpoints_num": 3,
+    "exclude_buffer_from_checkpoint": false
+  },
+  "benchmarl/benchmarl/conf/model/layers/mlp.yaml": {
+    "name": "mlp",
+    "num_cells": [
+      256,
+      256
+    ],
+    "layer_class": "torch.nn.Linear",
+    "activation_class": "torch.nn.Tanh",
+    "activation_kwargs": null,
+    "norm_class": null,
+    "norm_kwargs": null,
+    "num_feature_dims": 1
+  },
+  "harl/harl/configs/algos_cfgs/happo.yaml": {
+    "seed": {
+      "seed_specify": true,
+      "seed": 1
+    },
+    "device": {
+      "cuda": true,
+      "cuda_deterministic": true,
+      "torch_threads": 4
+    },
+    "train": {
+      "n_rollout_threads": 20,
+      "num_env_steps": 10000000,
+      "episode_length": 200,
+      "log_interval": 5,
+      "eval_interval": 25,
+      "use_valuenorm": true,
+      "use_linear_lr_decay": false,
+      "use_proper_time_limits": true,
+      "model_dir": null
+    },
+    "eval": {
+      "use_eval": true,
+      "n_eval_rollout_threads": 10,
+      "eval_episodes": 20
+    },
+    "render": {
+      "use_render": false,
+      "render_episodes": 10
+    },
+    "model": {
+      "hidden_sizes": [
+        128,
+        128
+      ],
+      "activation_func": "relu",
+      "use_feature_normalization": true,
+      "initialization_method": "orthogonal_",
+      "gain": 0.01,
+      "use_naive_recurrent_policy": false,
+      "use_recurrent_policy": false,
+      "recurrent_n": 1,
+      "data_chunk_length": 10,
+      "lr": 0.0005,
+      "critic_lr": 0.0005,
+      "opti_eps": 1e-05,
+      "weight_decay": 0,
+      "std_x_coef": 1,
+      "std_y_coef": 0.5
+    },
+    "algo": {
+      "ppo_epoch": 5,
+      "critic_epoch": 5,
+      "use_clipped_value_loss": true,
+      "clip_param": 0.2,
+      "actor_num_mini_batch": 1,
+      "critic_num_mini_batch": 1,
+      "entropy_coef": 0.01,
+      "value_loss_coef": 1,
+      "use_max_grad_norm": true,
+      "max_grad_norm": 10.0,
+      "use_gae": true,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "use_huber_loss": true,
+      "use_policy_active_masks": true,
+      "huber_delta": 10.0,
+      "action_aggregation": "prod",
+      "share_param": false,
+      "fixed_order": false
+    },
+    "logger": {
+      "log_dir": "./results"
+    }
+  },
+  "harl/harl/configs/algos_cfgs/maddpg.yaml": {
+    "seed": {
+      "seed_specify": true,
+      "seed": 1
+    },
+    "device": {
+      "cuda": true,
+      "cuda_deterministic": true,
+      "torch_threads": 4
+    },
+    "train": {
+      "n_rollout_threads": 10,
+      "num_env_steps": 10000000,
+      "warmup_steps": 10000,
+      "train_interval": 50,
+      "update_per_train": 1,
+      "log_interval": null,
+      "eval_interval": 10000,
+      "use_linear_lr_decay": false,
+      "use_proper_time_limits": true,
+      "model_dir": null
+    },
+    "eval": {
+      "use_eval": true,
+      "n_eval_rollout_threads": 20,
+      "eval_episodes": 40
+    },
+    "render": {
+      "use_render": false,
+      "render_episodes": 10
+    },
+    "model": {
+      "hidden_sizes": [
+        128,
+        128
+      ],
+      "activation_func": "relu",
+      "final_activation_func": "tanh",
+      "lr": 0.0005,
+      "critic_lr": 0.001
+    },
+    "algo": {
+      "gamma": 0.99,
+      "buffer_size": 1000000,
+      "batch_size": 1000,
+      "polyak": 0.005,
+      "expl_noise": 0.1,
+      "n_step": 1,
+      "share_param": false,
+      "fixed_order": true
+    },
+    "logger": {
+      "log_dir": "./results"
+    }
+  },
+  "harl/harl/configs/algos_cfgs/mappo.yaml": {
+    "seed": {
+      "seed_specify": true,
+      "seed": 1
+    },
+    "device": {
+      "cuda": true,
+      "cuda_deterministic": true,
+      "torch_threads": 4
+    },
+    "train": {
+      "n_rollout_threads": 20,
+      "num_env_steps": 10000000,
+      "episode_length": 200,
+      "log_interval": 5,
+      "eval_interval": 25,
+      "use_valuenorm": true,
+      "use_linear_lr_decay": false,
+      "use_proper_time_limits": true,
+      "model_dir": null
+    },
+    "eval": {
+      "use_eval": true,
+      "n_eval_rollout_threads": 10,
+      "eval_episodes": 20
+    },
+    "render": {
+      "use_render": false,
+      "render_episodes": 10
+    },
+    "model": {
+      "hidden_sizes": [
+        128,
+        128
+      ],
+      "activation_func": "relu",
+      "use_feature_normalization": true,
+      "initialization_method": "orthogonal_",
+      "gain": 0.01,
+      "use_naive_recurrent_policy": false,
+      "use_recurrent_policy": false,
+      "recurrent_n": 1,
+      "data_chunk_length": 10,
+      "lr": 0.0005,
+      "critic_lr": 0.0005,
+      "opti_eps": 1e-05,
+      "weight_decay": 0,
+      "std_x_coef": 1,
+      "std_y_coef": 0.5
+    },
+    "algo": {
+      "ppo_epoch": 5,
+      "critic_epoch": 5,
+      "use_clipped_value_loss": true,
+      "clip_param": 0.2,
+      "actor_num_mini_batch": 1,
+      "critic_num_mini_batch": 1,
+      "entropy_coef": 0.01,
+      "value_loss_coef": 1,
+      "use_max_grad_norm": true,
+      "max_grad_norm": 10.0,
+      "use_gae": true,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "use_huber_loss": true,
+      "use_policy_active_masks": true,
+      "huber_delta": 10.0,
+      "action_aggregation": "prod",
+      "share_param": true,
+      "fixed_order": true
+    },
+    "logger": {
+      "log_dir": "./results"
+    }
+  },
+  "harl/harl/configs/algos_cfgs/matd3.yaml": {
+    "seed": {
+      "seed_specify": true,
+      "seed": 1
+    },
+    "device": {
+      "cuda": true,
+      "cuda_deterministic": true,
+      "torch_threads": 4
+    },
+    "train": {
+      "n_rollout_threads": 10,
+      "num_env_steps": 10000000,
+      "warmup_steps": 10000,
+      "train_interval": 50,
+      "update_per_train": 1,
+      "log_interval": null,
+      "eval_interval": 10000,
+      "use_linear_lr_decay": false,
+      "use_proper_time_limits": true,
+      "model_dir": null
+    },
+    "eval": {
+      "use_eval": true,
+      "n_eval_rollout_threads": 20,
+      "eval_episodes": 40
+    },
+    "render": {
+      "use_render": false,
+      "render_episodes": 10
+    },
+    "model": {
+      "hidden_sizes": [
+        128,
+        128
+      ],
+      "activation_func": "relu",
+      "final_activation_func": "tanh",
+      "lr": 0.0005,
+      "critic_lr": 0.001
+    },
+    "algo": {
+      "gamma": 0.99,
+      "buffer_size": 1000000,
+      "batch_size": 1000,
+      "polyak": 0.005,
+      "expl_noise": 0.1,
+      "policy_noise": 0.2,
+      "noise_clip": 0.5,
+      "policy_freq": 2,
+      "n_step": 1,
+      "share_param": false,
+      "fixed_order": true
+    },
+    "logger": {
+      "log_dir": "./results"
+    }
+  }
+}

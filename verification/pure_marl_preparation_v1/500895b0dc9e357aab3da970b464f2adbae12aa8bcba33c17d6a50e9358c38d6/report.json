@@ -1,0 +1,68 @@
+{
+  "schema": "auv.pure_marl.preparation_checks.v1",
+  "source_identity": {
+    "review_sha256": "500895b0dc9e357aab3da970b464f2adbae12aa8bcba33c17d6a50e9358c38d6",
+    "profile": "active_pure_marl_preparation_v1",
+    "inventory_sha256": "db2b9e538dc10931868a58ef8c4c3d153b205ed21e547ac6a8182e1fd38f80bb",
+    "parent_commit": "e613ecb05bd6ef6d38f306f85fd7079e66857774",
+    "distribution": "auv.active_source.pure_marl_preparation.v1"
+  },
+  "source_audit": {
+    "passed": true,
+    "scope": "source_and_preparation_only",
+    "files": 414,
+    "review_sha256": "500895b0dc9e357aab3da970b464f2adbae12aa8bcba33c17d6a50e9358c38d6",
+    "parent_algorithms_unchanged": true,
+    "parent_evidence_immutable": true,
+    "training_started": false,
+    "native_backend_acceptance_passed": false,
+    "performance_passed": false
+  },
+  "interface_checks": {
+    "command": "python -m unittest checks.pure_marl_contracts -v",
+    "tests_run": 14,
+    "failures": 0,
+    "errors": 0,
+    "observed_result": "Ran 14 tests in 18.006s; OK",
+    "tested_component_hashes": {
+      "chapter3_bser/baselines/__init__.py": "bbf4ad9264d0a61eb9ad8670e2fbc1af050d8b891e99a5fca9daa2c7bb033e53",
+      "chapter3_bser/baselines/benchmarl_interface.py": "8f4d8f3bda6ad1a5b601ced8d613d67fe3dab9cff7d95ce327e5ac75189855b0",
+      "chapter3_bser/baselines/environment.py": "1ed1db66a93372ff26a4faffce1a3124eaac3a97e863fbe729d9660ad166115b",
+      "chapter3_bser/baselines/evaluation.py": "5a7f80691fbc6dcfe8ea4efe77f482c1e67ef0b03813290de5e565a98b0b283b",
+      "chapter3_bser/baselines/experiment.py": "1acbe40ba6271ff9e81da23ed7b5b27153061cb2e12b68f10a0e1635a2fa21e9",
+      "chapter3_bser/baselines/harl_interface.py": "107f4e4fe2f1f680a5a56520e4dfd85d0dbb176b609b3504ad1a60cec54d2aa1",
+      "chapter3_bser/baselines/metrics.py": "5743b822bb76445c2484df138dd21322739a0730597c244d96c431469bfacd9b",
+      "chapter3_bser/baselines/workflow.py": "b9158f365297769af4438bb45817ddf6bc60a8074019621e76153464f058f1ca",
+      "checks/pure_marl_contracts.py": "ec382867eb989409ebf9916364c7415dbc3df4ac0dad3eafa01c28babc0010bf",
+      "configs/pure_marl/native_defaults.json": "c9d67d05c1dae8d06e476c41c4e39cd92de9d23b9dd0520848f3759b495b67ec",
+      "configs/pure_marl/requirements-benchmarl.txt": "3580e5f777b509a6ae1496e7771f030b0de43490f96884f03c9daeb09d5c529e",
+      "configs/pure_marl/requirements-harl.txt": "10fa1020c500f14fa6bf632aeb293f51a952bb2963114609ce5a8a105369b923",
+      "configs/pure_marl/suite_v1.json": "6180ec55def24b4b4a150a8139f2e15834e2438f1b26566742718ba742b15664",
+      "configs/pure_marl/upstream/benchmarl/LICENSE": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93",
+      "configs/pure_marl/upstream/benchmarl/benchmarl/conf/algorithm/masac.yaml": "8c9611eba85e144a1fedeabc198a229d1014fc6c896c33148e5d77139f8c4af2",
+      "configs/pure_marl/upstream/benchmarl/benchmarl/conf/experiment/base_experiment.yaml": "199dd94386c85b685c36f42d2a5dbd688f50c4ee2085e1bd593a585b29b3cefa",
+      "configs/pure_marl/upstream/benchmarl/benchmarl/conf/model/layers/mlp.yaml": "f0de72c1b5f8d99fa94372680fd3a124226dc4ae5f47e51ce5ddb7b8c136cd67",
+      "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/happo.yaml": "34a439fbc08180eafada1dc18c2325584463c4a46094886a35760805418fdf7a",
+      "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/maddpg.yaml": "6e419491849ad57a297f3286e8b8ee66924446123808204f75f32223dc5853da",
+      "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/mappo.yaml": "11eed9f3278d605219111b2b166449a3279402441d665ca5a1726edc7cfacde5",
+      "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/matd3.yaml": "235cccd3028d59fcc593c54c7df1f213670d9f34252d0dd73fd60df4fa195b2a",
+      "configs/pure_marl/upstream/harl/setup.py": "b6dcc24eb5c30a91573308e1d08d2bc1044db4aafc6d2236aaa66025fa562bcc",
+      "configs/pure_marl/upstream/lock.json": "d8cd07d3b7e34b48b84e561f598214f58b231e208f360b10b7e608d2361b798b"
+    },
+    "source_metadata_changed_after_interface_run": true,
+    "scope": "Final interface component bytes are identical to the passing run; final source/provenance code checked independently."
+  },
+  "mechanism_scope": {
+    "temporary_native_models": 0,
+    "optimizer_updates": 0,
+    "checkpoint_loads": 0,
+    "physical_environments_per_check": 2,
+    "steps_per_environment": 4,
+    "fresh_environment_only": true
+  },
+  "native_backend_acceptance_passed": false,
+  "manual_research_execution_allowed": false,
+  "performance_passed": false,
+  "python": "3.10.20 | packaged by Anaconda, Inc. | (main, Mar 11 2026, 17:42:35) [MSC v.1942 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26200-SP0"
+}

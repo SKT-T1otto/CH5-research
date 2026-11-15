@@ -1,0 +1,93 @@
+{
+  "schema": "auv.pure_marl.suite.v1",
+  "execution_enabled": false,
+  "reference_config": {
+    "path": "configs/b2.json",
+    "sha256": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48"
+  },
+  "algorithms": {
+    "maddpg": "harl",
+    "matd3": "harl",
+    "mappo": "harl",
+    "happo": "harl",
+    "masac": "benchmarl"
+  },
+  "training_seeds": [
+    2729,
+    3729,
+    4729,
+    5729,
+    6729
+  ],
+  "environment": {
+    "n_agents": 4,
+    "observation_dim": 28,
+    "action_dim": 3,
+    "central_state_dim": 112,
+    "q_state_action_dim": 124,
+    "gamma": 0.95,
+    "max_steps": 400,
+    "action_id": "direct_normalized_acceleration_v1",
+    "observation_id": "public28_without_planner_v1",
+    "reward_objective": "team_mean_v1",
+    "task_protocol": "collision_terminal_v1",
+    "timeout_bootstrap": false,
+    "policy_parameter_sharing": false,
+    "environment_native_planning": "reward_and_sensor_instrumentation_only",
+    "d2_guidance": false,
+    "residual_prior": false
+  },
+  "budget": {
+    "joint_environment_steps": 2400000,
+    "counting_unit": "one simultaneous four-agent simulator step",
+    "budget_is_proposed_not_executed": true,
+    "updates": "retain each pinned backend algorithm native update schedule",
+    "collector_parallelism": 1
+  },
+  "scenario_splits": {
+    "train": {
+      "count": 1000,
+      "generator_seed": 12729
+    },
+    "dev": {
+      "count": 100,
+      "generator_seed": 22729
+    },
+    "test": {
+      "count": 300,
+      "generator_seed": 32729
+    }
+  },
+  "evaluation": {
+    "interval_joint_steps": 120000,
+    "deterministic": true,
+    "checkpoint_selection": "final fixed-budget checkpoint; dev curves diagnostic only",
+    "test_use": "once after configuration freeze; never tune on test",
+    "common_primary_metrics": [
+      "success_rate",
+      "collision_rate",
+      "discovery_rate",
+      "penalized_completion_steps"
+    ],
+    "secondary_metrics": [
+      "team_return",
+      "path_length",
+      "control_effort",
+      "policy_seconds",
+      "wall_seconds"
+    ],
+    "failure_completion_penalty_steps": 500,
+    "aggregation": "scene means within seed, then equal seed weights",
+    "own_method_requirement": "reuse these same train/dev/test manifests and environment interaction budget"
+  },
+  "native_config_overrides": [
+    "gamma=0.95",
+    "one collector environment",
+    "no actor parameter sharing",
+    "common interaction budget",
+    "disable native random-scenario evaluation; use common fixed manifests",
+    "MASAC independent critics",
+    "on-policy rollout length=400; original losses/epochs/minibatches retained"
+  ],
+  "status": "design_and_interface_preparation_only"
+}

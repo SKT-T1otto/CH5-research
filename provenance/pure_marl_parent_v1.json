@@ -1,0 +1,8 @@
+{
+  "parent_manifest": "provenance/reach_avoid_monitor_manifest.json",
+  "parent_manifest_sha256": "52a3dff76591f9fb32dc4b37c9b269356c076d1861de18bfe0183b5179ff7cdd",
+  "parent_review_sha256": "bb36f185d3b22fd4be845be3f1d4e864b5b25c953bccf21d3ae08aa18cc9f546",
+  "provenance_ast_sha256": "8854f6cb7e4401e31a092249183e5ca14c51e412a238985ae5e64e64566fdffc",
+  "parent_algorithms_unchanged": true,
+  "independent_verifier_ast_sha256": "5d1354ba40284bae12516baee61e11a01d1791299498e01ecf1e06b895fc3552"
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "auv.pure_marl.package_checks.v1",
+  "passed": true,
+  "package": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-Active\\work\\collision_terminal\\pure_marl_preview_20261106_v1",
+  "files_verified": 31,
+  "jobs": 25,
+  "scenario_counts": {
+    "train": 4,
+    "dev": 2,
+    "test": 2
+  },
+  "all_algorithms_share_identical_manifest_hashes": true,
+  "preview_only": true,
+  "full_experiment_design_counts": {
+    "train": 1000,
+    "dev": 100,
+    "test": 300
+  },
+  "training_started": false,
+  "checkpoint_loaded": false,
+  "native_backend_acceptance_passed": false,
+  "performance_passed": false
+}

@@ -1,0 +1,7 @@
+# Candidate isolated environment, pending native installation/API acceptance.
+# BenchMARL's pinned package declares its TorchRL/TensorDict dependencies;
+# record the actually resolved full pip freeze before native acceptance.
+numpy==2.2.6
+torch==2.11.0
+PyYAML==6.0.2
+benchmarl @ git+https://github.com/facebookresearch/BenchMARL.git@65d649d80e0bdcbdbe2c5d6a3f02dbfed8f0bec1

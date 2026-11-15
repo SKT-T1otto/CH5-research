@@ -1,0 +1,43 @@
+{
+  "version": "ch5_async_semantic_comm_v2",
+  "status": "DESIGN_ONLY_NOT_IMPLEMENTED",
+  "scope_date": "2026-11-13",
+  "restricted_channels": [
+    "target",
+    "teammate_state",
+    "map_evidence",
+    "assignment_route_phase",
+    "ack_summary",
+    "relay_retransmission"
+  ],
+  "free_live_side_channels": [],
+  "public_metadata": [
+    "agent_roles_and_models",
+    "coordinate_frame",
+    "initial_time_and_tdma_rule"
+  ],
+  "coordinator": "fixed host on one existing Searcher; host selection to freeze",
+  "physical_agents": 4,
+  "ch3_rl_map_selection": "REVIEW_REQUIRED",
+  "baseline_reward_dynamics_success": "inherit selected Chapter 3 identity; no change in this design task",
+  "protocol_evolution": [
+    "receiver_local_knowledge",
+    "local_phase_instead_of_global_found_gate",
+    "continued_local_sensing_with_existing_sensor_capabilities",
+    "budgeted_planning_commands"
+  ],
+  "core_candidates": [
+    "typed_asynchronous_coupled_knowledge",
+    "delivery_chain_cross_semantic_smdp_communication_learning"
+  ],
+  "primary_training": "common legal-information task Actor then frozen task Actor; on-policy communication Actor-Critic",
+  "risk_variant": "original continuous episode return CVaR; standard method, not independent novelty",
+  "deferred": [
+    "alternating_task_actor_adaptation",
+    "fully_distributed_team_planning",
+    "strict_distribution_ball_DRO",
+    "full_environment_counterfactual_training"
+  ],
+  "no_runtime_files_modified": true,
+  "new_training_started": false
+}

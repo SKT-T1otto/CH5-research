@@ -1,0 +1,62 @@
+{
+  "schema": "auv.pure_marl.upstream.v1",
+  "sources": {
+    "harl": {
+      "repository": "https://github.com/PKU-MARL/HARL",
+      "commit": "b1af98b0dbab72a2eee9d160751cd09aedbb8ce2",
+      "files": {
+        "harl/configs/algos_cfgs/maddpg.yaml": {
+          "local": "harl/harl/configs/algos_cfgs/maddpg.yaml",
+          "url": "https://raw.githubusercontent.com/PKU-MARL/HARL/b1af98b0dbab72a2eee9d160751cd09aedbb8ce2/harl/configs/algos_cfgs/maddpg.yaml",
+          "sha256": "6e419491849ad57a297f3286e8b8ee66924446123808204f75f32223dc5853da"
+        },
+        "harl/configs/algos_cfgs/matd3.yaml": {
+          "local": "harl/harl/configs/algos_cfgs/matd3.yaml",
+          "url": "https://raw.githubusercontent.com/PKU-MARL/HARL/b1af98b0dbab72a2eee9d160751cd09aedbb8ce2/harl/configs/algos_cfgs/matd3.yaml",
+          "sha256": "235cccd3028d59fcc593c54c7df1f213670d9f34252d0dd73fd60df4fa195b2a"
+        },
+        "harl/configs/algos_cfgs/mappo.yaml": {
+          "local": "harl/harl/configs/algos_cfgs/mappo.yaml",
+          "url": "https://raw.githubusercontent.com/PKU-MARL/HARL/b1af98b0dbab72a2eee9d160751cd09aedbb8ce2/harl/configs/algos_cfgs/mappo.yaml",
+          "sha256": "11eed9f3278d605219111b2b166449a3279402441d665ca5a1726edc7cfacde5"
+        },
+        "harl/configs/algos_cfgs/happo.yaml": {
+          "local": "harl/harl/configs/algos_cfgs/happo.yaml",
+          "url": "https://raw.githubusercontent.com/PKU-MARL/HARL/b1af98b0dbab72a2eee9d160751cd09aedbb8ce2/harl/configs/algos_cfgs/happo.yaml",
+          "sha256": "34a439fbc08180eafada1dc18c2325584463c4a46094886a35760805418fdf7a"
+        },
+        "setup.py": {
+          "local": "harl/setup.py",
+          "url": "https://raw.githubusercontent.com/PKU-MARL/HARL/b1af98b0dbab72a2eee9d160751cd09aedbb8ce2/setup.py",
+          "sha256": "b6dcc24eb5c30a91573308e1d08d2bc1044db4aafc6d2236aaa66025fa562bcc"
+        }
+      }
+    },
+    "benchmarl": {
+      "repository": "https://github.com/facebookresearch/BenchMARL",
+      "commit": "65d649d80e0bdcbdbe2c5d6a3f02dbfed8f0bec1",
+      "files": {
+        "benchmarl/conf/algorithm/masac.yaml": {
+          "local": "benchmarl/benchmarl/conf/algorithm/masac.yaml",
+          "url": "https://raw.githubusercontent.com/facebookresearch/BenchMARL/65d649d80e0bdcbdbe2c5d6a3f02dbfed8f0bec1/benchmarl/conf/algorithm/masac.yaml",
+          "sha256": "8c9611eba85e144a1fedeabc198a229d1014fc6c896c33148e5d77139f8c4af2"
+        },
+        "benchmarl/conf/experiment/base_experiment.yaml": {
+          "local": "benchmarl/benchmarl/conf/experiment/base_experiment.yaml",
+          "url": "https://raw.githubusercontent.com/facebookresearch/BenchMARL/65d649d80e0bdcbdbe2c5d6a3f02dbfed8f0bec1/benchmarl/conf/experiment/base_experiment.yaml",
+          "sha256": "199dd94386c85b685c36f42d2a5dbd688f50c4ee2085e1bd593a585b29b3cefa"
+        },
+        "benchmarl/conf/model/layers/mlp.yaml": {
+          "local": "benchmarl/benchmarl/conf/model/layers/mlp.yaml",
+          "url": "https://raw.githubusercontent.com/facebookresearch/BenchMARL/65d649d80e0bdcbdbe2c5d6a3f02dbfed8f0bec1/benchmarl/conf/model/layers/mlp.yaml",
+          "sha256": "f0de72c1b5f8d99fa94372680fd3a124226dc4ae5f47e51ce5ddb7b8c136cd67"
+        },
+        "LICENSE": {
+          "local": "benchmarl/LICENSE",
+          "url": "https://raw.githubusercontent.com/facebookresearch/BenchMARL/65d649d80e0bdcbdbe2c5d6a3f02dbfed8f0bec1/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      }
+    }
+  }
+}

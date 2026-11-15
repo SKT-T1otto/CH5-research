@@ -1,0 +1,56 @@
+{
+  "schema": "ch5.integrated.short.v1",
+  "seed": 4317,
+  "parent_config": "configs/b2.json",
+  "parent_config_sha256": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48",
+  "collection_episodes": 2,
+  "collection_scenario_seeds": [699, 67431],
+  "communication_episodes": 2,
+  "evaluation_episodes": 2,
+  "evaluation_modes": [
+    "learned",
+    "fixed"
+  ],
+  "rollout_limit_steps": 32,
+  "auxiliary_updates": 4,
+  "task_updates": 4,
+  "label_horizon": 8,
+  "neural_cache_steps": 32,
+  "train_scenario_seed": 67431,
+  "eval_scenario_seed": 97431,
+  "neural": {
+    "map_dim": 7,
+    "dynamic_dim": 8,
+    "query_dim": 9,
+    "latent_dim": 32,
+    "geometry_dim": 7,
+    "state_dim": 6,
+    "route_dim": 5,
+    "context_dim": 7,
+    "map_slots": 2,
+    "dynamic_slots": 2,
+    "num_heads": 4,
+    "header_bytes": 16,
+    "integration_steps": 4,
+    "hidden_dim": 64
+  },
+  "channel": {
+    "capacity_bits": 8192,
+    "refill_bits": 2048,
+    "loss_probability": 0.1,
+    "delay_steps": 1,
+    "jitter_steps": 2,
+    "rate_bps": 9600.0,
+    "sound_speed": 1500.0,
+    "burst_start_probability": 0.02,
+    "burst_length": 4,
+    "burst_loss_probability": 0.8
+  },
+  "notes": [
+    "Collection only: seed699 is an unchanged native M20 case selected for initial sensor-range mechanism coverage; seed67431 is ordinary. This stratification is not evaluation evidence.",
+    "Original task max_steps=400; 32 is external budget truncation, not environment terminal.",
+    "B2 MADDPG and receiver-local third-chapter online map are an explicit engineering baseline, not a best-method claim.",
+    "Fixed cyclic receiver schedule; learned head selects packet/NOOP, not receiver identity.",
+    "Mean SMDP A2C only; no DRO/CVaR performance claim."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "auv.active.check_inventory.v1",
+  "expected_tests": 470,
+  "modules": [
+    "checks.test_learning",
+    "checks.test_workflow",
+    "checks.test_checkout",
+    "checks.test_public_events",
+    "checks.test_map_source",
+    "checks.test_coupled_search",
+    "checks.test_map_suite",
+    "checks.test_map_convergence",
+    "checks.test_map_persistence",
+    "checks.test_map_cache",
+    "checks.test_bounded_map",
+    "checks.test_bounded_experiment",
+    "checks.test_route_health",
+    "checks.test_map_diagnostics",
+    "checks.test_executor_standby",
+    "checks.test_executor_recovery",
+    "checks.test_executor_diagnostics",
+    "checks.test_safe_rl",
+    "checks.test_safe_rl_validation",
+    "checks.test_safe_rl_recovery",
+    "checks.test_safe_rl_transport",
+    "checks.test_reach_avoid",
+    "checks.test_reach_avoid_release",
+    "checks.test_scan_geometry",
+    "checks.test_reach_avoid_monitor"
+  ],
+  "allow_skips": false
+}

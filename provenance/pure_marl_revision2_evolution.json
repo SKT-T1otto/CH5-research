@@ -1,0 +1,204 @@
+{
+  "schema": "auv.pure_marl.evolution.v1",
+  "parent_review_sha256": "bb36f185d3b22fd4be845be3f1d4e864b5b25c953bccf21d3ae08aa18cc9f546",
+  "changes": [
+    {
+      "path": "chapter3_bser/baselines/__init__.py",
+      "before_sha256": null,
+      "after_sha256": "bbf4ad9264d0a61eb9ad8670e2fbc1af050d8b891e99a5fca9daa2c7bb033e53",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/benchmarl_interface.py",
+      "before_sha256": null,
+      "after_sha256": "8f4d8f3bda6ad1a5b601ced8d613d67fe3dab9cff7d95ce327e5ac75189855b0",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/environment.py",
+      "before_sha256": null,
+      "after_sha256": "1ed1db66a93372ff26a4faffce1a3124eaac3a97e863fbe729d9660ad166115b",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/evaluation.py",
+      "before_sha256": null,
+      "after_sha256": "5a7f80691fbc6dcfe8ea4efe77f482c1e67ef0b03813290de5e565a98b0b283b",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/experiment.py",
+      "before_sha256": null,
+      "after_sha256": "1acbe40ba6271ff9e81da23ed7b5b27153061cb2e12b68f10a0e1635a2fa21e9",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/harl_interface.py",
+      "before_sha256": null,
+      "after_sha256": "107f4e4fe2f1f680a5a56520e4dfd85d0dbb176b609b3504ad1a60cec54d2aa1",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/metrics.py",
+      "before_sha256": null,
+      "after_sha256": "5743b822bb76445c2484df138dd21322739a0730597c244d96c431469bfacd9b",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/source.py",
+      "before_sha256": null,
+      "after_sha256": "02e4c10759fdc86eb1d885c19530b4646a4ed965ad66ab27a2985d393734a81c",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/baselines/workflow.py",
+      "before_sha256": null,
+      "after_sha256": "b9158f365297769af4438bb45817ddf6bc60a8074019621e76153464f058f1ca",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "chapter3_bser/learning/provenance.py",
+      "before_sha256": "1a17ca9ff410697b17b0a50aeb8ad409d81745a56a73b272178e59260096cae5",
+      "after_sha256": "bc5d78f5ddd02ed099cd476e93ae28ea3e60a0b0241ed009e5d603af3397c1a8",
+      "reason": "Exact additive source-profile dispatch; parent implementation AST preserved"
+    },
+    {
+      "path": "checks/pure_marl_contracts.py",
+      "before_sha256": null,
+      "after_sha256": "ec382867eb989409ebf9916364c7415dbc3df4ac0dad3eafa01c28babc0010bf",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/native_defaults.json",
+      "before_sha256": null,
+      "after_sha256": "c9d67d05c1dae8d06e476c41c4e39cd92de9d23b9dd0520848f3759b495b67ec",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/requirements-benchmarl.txt",
+      "before_sha256": null,
+      "after_sha256": "3580e5f777b509a6ae1496e7771f030b0de43490f96884f03c9daeb09d5c529e",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/requirements-harl.txt",
+      "before_sha256": null,
+      "after_sha256": "10fa1020c500f14fa6bf632aeb293f51a952bb2963114609ce5a8a105369b923",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/suite_v1.json",
+      "before_sha256": null,
+      "after_sha256": "6180ec55def24b4b4a150a8139f2e15834e2438f1b26566742718ba742b15664",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/benchmarl/LICENSE",
+      "before_sha256": null,
+      "after_sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/benchmarl/benchmarl/conf/algorithm/masac.yaml",
+      "before_sha256": null,
+      "after_sha256": "8c9611eba85e144a1fedeabc198a229d1014fc6c896c33148e5d77139f8c4af2",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/benchmarl/benchmarl/conf/experiment/base_experiment.yaml",
+      "before_sha256": null,
+      "after_sha256": "199dd94386c85b685c36f42d2a5dbd688f50c4ee2085e1bd593a585b29b3cefa",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/benchmarl/benchmarl/conf/model/layers/mlp.yaml",
+      "before_sha256": null,
+      "after_sha256": "f0de72c1b5f8d99fa94372680fd3a124226dc4ae5f47e51ce5ddb7b8c136cd67",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/happo.yaml",
+      "before_sha256": null,
+      "after_sha256": "34a439fbc08180eafada1dc18c2325584463c4a46094886a35760805418fdf7a",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/maddpg.yaml",
+      "before_sha256": null,
+      "after_sha256": "6e419491849ad57a297f3286e8b8ee66924446123808204f75f32223dc5853da",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/mappo.yaml",
+      "before_sha256": null,
+      "after_sha256": "11eed9f3278d605219111b2b166449a3279402441d665ca5a1726edc7cfacde5",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/harl/harl/configs/algos_cfgs/matd3.yaml",
+      "before_sha256": null,
+      "after_sha256": "235cccd3028d59fcc593c54c7df1f213670d9f34252d0dd73fd60df4fa195b2a",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/harl/setup.py",
+      "before_sha256": null,
+      "after_sha256": "b6dcc24eb5c30a91573308e1d08d2bc1044db4aafc6d2236aaa66025fa562bcc",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "configs/pure_marl/upstream/lock.json",
+      "before_sha256": null,
+      "after_sha256": "d8cd07d3b7e34b48b84e561f598214f58b231e208f360b10b7e608d2361b798b",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "docs/PURE_MARL_BASELINES_20261106.md",
+      "before_sha256": null,
+      "after_sha256": "3923bee9b4add2ce877710698ecc77182f2c348d9a3908c54b961c42858df447",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "provenance/pure_marl_evolution.json",
+      "before_sha256": null,
+      "after_sha256": "5055e76904941affe599c396e751253a28d48d4d1055be0760b7c90d6ed1f633",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "provenance/pure_marl_manifest.json",
+      "before_sha256": null,
+      "after_sha256": "e53a95d66b6a569648b69f7dc94378e947d1b431a833b300565115b961807868",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "provenance/pure_marl_parent_v1.json",
+      "before_sha256": null,
+      "after_sha256": "5141e88d9dd7de8c0fffa4344365b11bcf6be97560045cbcdfe079434e96f56c",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "provenance/reach_avoid_monitor_manifest.json",
+      "before_sha256": null,
+      "after_sha256": "52a3dff76591f9fb32dc4b37c9b269356c076d1861de18bfe0183b5179ff7cdd",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "tools/fetch_pure_marl_upstream.py",
+      "before_sha256": null,
+      "after_sha256": "3ab7a20bcfb2bfc7c02228a09beb74550ecd0a7011d32c478c4675754157a600",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "tools/verify_pure_marl.py",
+      "before_sha256": null,
+      "after_sha256": "b2c995d5475ecfbb3822f55a5f1ff75e8051b2ee17a2cb6382e38200968c58a2",
+      "reason": "New pure-MARL design/config/interface/verification input; no parent algorithm edits"
+    },
+    {
+      "path": "tools/verify_source.py",
+      "before_sha256": "04a0e525208426f7fc844ab11b941964c91bee58e8a8a9f753ef20f16898cc62",
+      "after_sha256": "193a971e986623f354cbd056c99d74de21ea8d86126c89cbb2f8f02969c5a105",
+      "reason": "Exact additive source-profile dispatch; parent implementation AST preserved"
+    }
+  ]
+}

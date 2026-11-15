@@ -1,0 +1,8 @@
+# Install in a separate environment; this file is never auto-installed.
+# Keep the workspace's numpy/torch pins unless compatibility evidence requires
+# a separately documented environment. Do not downgrade the existing AUV env.
+numpy==2.2.6
+torch==2.11.0
+PyYAML==6.0.2
+gym==0.26.2
+harl @ git+https://github.com/PKU-MARL/HARL.git@b1af98b0dbab72a2eee9d160751cd09aedbb8ce2

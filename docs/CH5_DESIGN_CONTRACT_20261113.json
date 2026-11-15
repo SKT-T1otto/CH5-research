@@ -1,0 +1,80 @@
+{
+  "version": "ch5_neural_communication_integrated_short_v1",
+  "status": "INTEGRATED_SHORT_TEST_PASSED_NOT_FORMAL_PERFORMANCE",
+  "scope_date": "2026-11-13",
+  "restricted_channels": [
+    "target",
+    "teammate_state",
+    "map_evidence",
+    "assignment_route_phase",
+    "ack_summary",
+    "relay_retransmission"
+  ],
+  "free_live_side_channels": [],
+  "public_metadata": [
+    "agent_roles_and_models",
+    "coordinate_frame",
+    "initial_time_and_tdma_rule"
+  ],
+  "coordinator": "existing Searcher0",
+  "physical_agents": 4,
+  "ch3_rl_map_selection": "configs/b2.json D2_B2_repair_v2 MADDPG; receiver-local OnlineUnknownMapTaskPlanner",
+  "baseline_reward_dynamics_success": "Inherited core/chapter3_bser bytes unchanged; original 400-step deadline/reward/task. Local information and communication-dependent control explicitly adapted.",
+  "protocol_evolution": [
+    "receiver_local_knowledge",
+    "local_phase_instead_of_global_found_gate",
+    "continued_local_sensing_with_existing_sensor_capabilities",
+    "budgeted_planning_commands"
+  ],
+  "core_candidates": [
+    "task_query_route_preserving_packet_encoder",
+    "geometry_conditioned_continuous_time_decoder"
+  ],
+  "primary_training": "Factual single-packet auxiliary pretraining; inherited MADDPG adaptation; freeze codec/decoder/task Actor; fresh-episode on-policy mean SMDP A2C; short evaluation.",
+  "risk_variant": "Not implemented; no CVaR/DRO claim.",
+  "deferred": [
+    "formal long training",
+    "multi-seed statistical evaluation",
+    "independently trained ablations",
+    "cache-level exact replay",
+    "fully distributed planning",
+    "CVaR or strict DRO"
+  ],
+  "new_training_started": true,
+  "neural_modules_implemented": true,
+  "route_label_provider_implemented": true,
+  "task_feature_adapter_implemented": true,
+  "channel_integration_implemented": true,
+  "rl_learner_implemented": true,
+  "trained_weights_available": true,
+  "inherited_runtime_unchanged": true,
+  "new_prototype_files": [
+    "chapter5_comm/neural_modules.py",
+    "chapter5_comm/__init__.py",
+    "checks/test_ch5_neural_modules.py"
+  ],
+  "formal_long_training_started": false,
+  "formal_performance_verified": false,
+  "integration_files": [
+    "chapter5_comm/protocol.py",
+    "chapter5_comm/runtime.py",
+    "chapter5_comm/data.py",
+    "chapter5_comm/training.py",
+    "chapter5_comm/pipeline.py",
+    "chapter5_comm/workflow.py",
+    "configs/chapter5/short_pipeline_v1.json"
+  ],
+  "experimental_evidence": "See CH5_SHORT_TEST_RESULTS_20261113.md and outputs/chapter5/integration_short_20261113_b/report.json; no formal performance acceptance.",
+  "short_test": {
+    "output": "outputs/chapter5/integration_short_20261113_b",
+    "episodes": 8,
+    "physical_steps": 256,
+    "unit_tests": 44,
+    "auxiliary_updates": 4,
+    "task_updates": 4,
+    "communication_updates": 2,
+    "factual_auxiliary_examples": 50,
+    "observable_state_labels": 5,
+    "learned_advantage_observed": false
+  }
+}
