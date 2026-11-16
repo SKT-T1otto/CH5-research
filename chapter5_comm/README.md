@@ -1,5 +1,7 @@
 # 第五章通信工程
 
+2026-11-16新增完整Linux实验入口：`experiment_workflow.py`、`experiment_runner.py`、`experiment_config.py`、`experiment_state.py`、`experiment_report.py` 和 `scripts/ch5_linux.sh`。正式配置、重训消融、故障扫描及新schema续跑见 [Linux手册](../docs/CH5_LINUX_EXPERIMENTS_20261116.md)。下文原有短流程及其检查点限制保持。
+
 当前可运行闭环为：第三章B2 MADDPG/局部在线地图 → 真实计费信道 → 双流量化编码与几何条件时间解码 → 原任务执行 → 事实轨迹标签 → 辅助学习/MADDPG/通信A2C → 新检查点恢复 → 短评价。
 
 | 文件 | 职责 |
@@ -12,4 +14,4 @@
 | pipeline.py | 有限真实采集、三类学习更新、恢复和评价闭环 |
 | workflow.py | plan/smoke/collect/labels/train/evaluate 命令；train同样受短测试硬上限约束 |
 
-详细数据契约、命令和实验边界见 [接入说明](../docs/CH5_INTEGRATION_20261113.md)。当前流程不提供长训练和活动环境/replay恢复；不得将有限更新权重作为正式性能结果。
+短流程的数据契约见 [接入说明](../docs/CH5_INTEGRATION_20261113.md)。旧短流程不提供长训练或replay恢复；新实验入口支持其自身episode边界恢复，两种schema不可混用，均不恢复活动环境。不得将有限更新权重作为正式性能结果。

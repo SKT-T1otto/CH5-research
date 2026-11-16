@@ -1,0 +1,121 @@
+{
+  "schema": "ch5.linux.experiment.v1",
+  "parent_config_sha256": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48",
+  "seeds": [
+    4317,
+    5329,
+    6353,
+    7481,
+    8527
+  ],
+  "arms": [
+    "full",
+    "fixed_scheduler",
+    "raw_only",
+    "no_query",
+    "no_transport",
+    "no_geometry",
+    "no_time_loss",
+    "no_route_loss"
+  ],
+  "collection_mechanism_seeds": [
+    699
+  ],
+  "collection_episodes": 32,
+  "auxiliary_updates": 1500,
+  "auxiliary_batch_size": 64,
+  "auxiliary_checkpoint_interval": 100,
+  "task_episodes": 800,
+  "communication_episodes": 800,
+  "validation_episodes": 20,
+  "validation_interval": 50,
+  "evaluation_episodes": 200,
+  "checkpoint_interval": 50,
+  "replay_capacity": 100000,
+  "task_batch_size": 128,
+  "task_warmup": 256,
+  "task_update_frequency": 4,
+  "task_updates_per_trigger": 2,
+  "rollout_limit_steps": 400,
+  "label_horizon": 8,
+  "minimum_state_labels": 32,
+  "minimum_positive_routes": 64,
+  "neural": {
+    "map_dim": 7,
+    "dynamic_dim": 8,
+    "query_dim": 9,
+    "latent_dim": 32,
+    "geometry_dim": 7,
+    "state_dim": 6,
+    "route_dim": 5,
+    "context_dim": 7,
+    "map_slots": 2,
+    "dynamic_slots": 2,
+    "num_heads": 4,
+    "header_bytes": 16,
+    "integration_steps": 4,
+    "hidden_dim": 64
+  },
+  "channel": {
+    "capacity_bits": 8192,
+    "refill_bits": 2048,
+    "loss_probability": 0.1,
+    "delay_steps": 1,
+    "jitter_steps": 2,
+    "rate_bps": 9600,
+    "sound_speed": 1500,
+    "burst_start_probability": 0.02,
+    "burst_length": 4,
+    "burst_loss_probability": 0.8
+  },
+  "evaluation_channels": {
+    "nominal": {},
+    "loss_high": {
+      "loss_probability": 0.4
+    },
+    "delay_high": {
+      "delay_steps": 8,
+      "jitter_steps": 4
+    },
+    "burst_long": {
+      "burst_start_probability": 0.08,
+      "burst_length": 16,
+      "burst_loss_probability": 0.95
+    },
+    "budget_low": {
+      "capacity_bits": 2048,
+      "refill_bits": 128,
+      "rate_bps": 2400
+    },
+    "combined_unseen": {
+      "loss_probability": 0.35,
+      "delay_steps": 6,
+      "jitter_steps": 6,
+      "burst_start_probability": 0.08,
+      "burst_length": 16,
+      "burst_loss_probability": 0.95,
+      "refill_bits": 256,
+      "rate_bps": 2400
+    },
+    "reliable_reference": {
+      "capacity_bits": 65536,
+      "refill_bits": 16384,
+      "rate_bps": 1000000,
+      "loss_probability": 0,
+      "burst_start_probability": 0,
+      "delay_steps": 0,
+      "jitter_steps": 0
+    }
+  },
+  "save_episode_details": false,
+  "notes": [
+    "Original task/reward/physics/success preserved; only training budgets and declared module ablations differ.",
+    "Each arm is independently trained, with matching stage interaction budgets; raw_only omits neural optimization but retains equal task interactions.",
+    "Mechanism seed699 is collection-only; validation and test have disjoint fixed namespaces.",
+    "Raw/control/ACK traffic is still present in raw_only; it is not a zero-communication baseline.",
+    "Reliable_reference is an information-rich diagnostic, not a budget-matched competitor.",
+    "No external-paper reproduction or strict DRO/CVaR training is claimed."
+  ],
+  "kind": "formal",
+  "config_name": "formal_experiment_v1.json"
+}

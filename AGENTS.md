@@ -16,3 +16,12 @@ The user authorized this independent Chapter 5 workspace and organization on 202
 - No long training or historical checkpoint restore. Commit/push require explicit user authorization; the user's 2026-11-15 request authorizes publishing the complete current source and inherited RL/map base to `https://github.com/SKT-T1otto/CH5-research.git`. The authorized short workflow may restore its own newly created CH5 checkpoint to verify inference on new episodes. Replay and active environment resume are not implemented.
 - Report actual implementation, protocol checks, independent training seeds and performance evidence separately. Never turn a design formula, copied evidence or evaluation overlay into a completed experiment claim.
 - Record created/modified/moved files, use task-appropriate checks and wait for all terminal commands before completion.
+
+The user's 2026-11-16 request authorizes preparing and publishing complete Linux
+experiment scripts and presets to the same GitHub repository. This authorizes
+manual Linux pilot/formal entry points, new episode-boundary checkpoint/replay
+serialization and explicit network ablations. It does not authorize running
+long training on this computer. Keep the original bounded `ch5 smoke` guard;
+extended runs use the separate `ch5-experiment` launcher and explicit execution.
+Historical checkpoints/results remain immutable. New experiment checkpoints
+may resume only their own frozen source/config/seed/arm at a committed boundary.

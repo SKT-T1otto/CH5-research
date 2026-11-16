@@ -3,8 +3,9 @@
 No simulator is imported or executed by this module. Auxiliary labels must be
 provided by the factual trajectory dataset. Communication rewards are original
 task rewards accumulated over physical-time intervals, never message scores.
-Checkpoint restore is for inference/new episodes; replay and active simulator
-state are deliberately not advertised as resumable.
+The short-workflow checkpoint is for inference/new episodes. The separate
+experiment_state module adds new, gated-replay episode-boundary snapshots;
+neither schema restores an active simulator.
 """
 from dataclasses import asdict, dataclass, fields
 from pathlib import Path
@@ -44,6 +45,9 @@ class NeuralConfig:
     header_bytes: int = 16
     integration_steps: int = 4
     hidden_dim: int = 64
+    query_conditioning: bool = True
+    temporal_transport: bool = True
+    geometry_conditioning: bool = True
 
     @classmethod
     def from_mapping(cls, value=None):
@@ -64,11 +68,15 @@ class CH5Networks(nn.Module):
         super().__init__()
         self.config = NeuralConfig.from_mapping(config)
         c = self.config
+        if any(type(x) is not bool for x in (c.query_conditioning, c.temporal_transport, c.geometry_conditioning)):
+            raise ValueError("ablation switches must be boolean")
         self.encoder = TaskPacketEncoder(c.map_dim, c.dynamic_dim, c.query_dim,
                                          c.latent_dim, c.map_slots, c.dynamic_slots,
                                          c.num_heads, c.header_bytes)
         self.decoder = GeometryTemporalDecoder(c.latent_dim, c.geometry_dim,
                                                c.state_dim, c.integration_steps)
+        self.decoder.transport_enabled = c.temporal_transport
+        self.decoder.geometry_conditioning = c.geometry_conditioning
         self.route_head = RouteUtilityHead(c.latent_dim, c.route_dim, c.hidden_dim)
         self.scheduler = BudgetedPacketScheduler(c.latent_dim, c.context_dim, c.hidden_dim)
 
@@ -84,9 +92,10 @@ def freeze_auxiliary(networks, frozen=True):
         module.train(not frozen)
 
 
-def _cap(value):
-    if type(value) is not int or not 0 <= value <= MAX_MECHANISM_UPDATES:
-        raise ValueError("this bounded learner allows zero to four updates")
+def _cap(value, *, experiment=False):
+    limit = 1000000 if experiment else MAX_MECHANISM_UPDATES
+    if type(value) is not int or not 0 <= value <= limit:
+        raise ValueError(f"learner update limit must be within 0..{limit}")
     return value
 
 
@@ -107,9 +116,10 @@ def _parameters_changed(parameters, before):
 class AuxiliaryTrainer:
     """Actual optimization of route/prediction/time losses on supplied labels."""
     def __init__(self, networks, *, learning_rate=3e-4, route_weight=1.0,
-                 prediction_weight=1.0, time_weight=0.1, max_updates=4):
+                 prediction_weight=1.0, time_weight=0.1, max_updates=4, experiment=False):
         self.networks = networks
-        self.max_updates = _cap(max_updates)
+        self.experiment = bool(experiment)
+        self.max_updates = _cap(max_updates, experiment=self.experiment)
         self.updates = 0
         self.weights = dict(route=float(route_weight), prediction=float(prediction_weight),
                             time=float(time_weight))
@@ -140,8 +150,9 @@ class AuxiliaryTrainer:
             raise ValueError("state_valid must be a per-example [B] mask")
         if not bool(b["state_valid"].any() or b["route_valid"].any()):
             return {"skipped": True, "reason": "no_supervised_targets", "updates": self.updates}
+        queries = b["query_available"] if n.config.query_conditioning else torch.zeros_like(b["query_available"])
         encoded = n.encoder(b["map_tokens"], b["dynamic_tokens"], b["receiver_query"],
-                            b["query_available"], b["map_mask"], b["dynamic_mask"])
+                            queries, b["map_mask"], b["dynamic_mask"])
         received = b["received"] & encoded.valid
         decoded = n.decoder(encoded.tokens, encoded.stream_types, received,
                             b["ages"], b["local_geometry"])
@@ -182,7 +193,7 @@ class AuxiliaryTrainer:
         return row
 
     def state_dict(self):
-        return dict(updates=self.updates, max_updates=self.max_updates,
+        return dict(updates=self.updates, max_updates=self.max_updates, experiment=self.experiment,
                     weights=self.weights, optimizer=self.optimizer.state_dict(), history=self.history)
 
 
@@ -205,7 +216,7 @@ class CommunicationLearner:
     or artificial communication reward is introduced.
     """
     def __init__(self, scheduler, critic_dim, *, gamma=.95, learning_rate=3e-4,
-                 hidden_dim=64, value_weight=.5, entropy_weight=0., max_updates=4):
+                 hidden_dim=64, value_weight=.5, entropy_weight=0., max_updates=4, experiment=False):
         self.scheduler = scheduler
         self.critic_dim = int(critic_dim)
         if self.critic_dim < 1 or not 0 < gamma <= 1:
@@ -216,7 +227,8 @@ class CommunicationLearner:
         self.gamma, self.value_weight, self.entropy_weight = float(gamma), float(value_weight), float(entropy_weight)
         if not math.isfinite(self.value_weight) or self.value_weight < 0 or not math.isfinite(self.entropy_weight) or self.entropy_weight < 0:
             raise ValueError("critic/entropy coefficients must be finite and nonnegative")
-        self.max_updates, self.updates, self.policy_version = _cap(max_updates), 0, 0
+        self.experiment = bool(experiment)
+        self.max_updates, self.updates, self.policy_version = _cap(max_updates, experiment=self.experiment), 0, 0
         device = next(scheduler.parameters()).device
         self.critic = nn.Sequential(nn.Linear(self.critic_dim, hidden_dim), nn.Tanh(), nn.Linear(hidden_dim, 1)).to(device)
         self.parameters = list(scheduler.parameters()) + list(self.critic.parameters())
@@ -318,7 +330,7 @@ class CommunicationLearner:
         return row
 
     def state_dict(self):
-        return dict(critic_dim=self.critic_dim, hidden_dim=self.hidden_dim, gamma=self.gamma, value_weight=self.value_weight,
+        return dict(critic_dim=self.critic_dim, hidden_dim=self.hidden_dim, gamma=self.gamma, value_weight=self.value_weight, experiment=self.experiment,
                     entropy_weight=self.entropy_weight, max_updates=self.max_updates,
                     updates=self.updates, policy_version=self.policy_version,
                     critic=self.critic.state_dict(), optimizer=self.optimizer.state_dict(), history=self.history)
@@ -326,14 +338,15 @@ class CommunicationLearner:
 
 class TaskReplayUpdater:
     """Use the inherited gated 28D/3D replay and unmodified MADDPG update."""
-    def __init__(self, model, *, capacity=1024, batch_size=8, minimum_batch_size=2, max_updates=4):
+    def __init__(self, model, *, capacity=1024, batch_size=8, minimum_batch_size=2, max_updates=4, experiment=False, device="cpu"):
         from chapter3_bser.learning.replay import ExecutionReplay
         if not 1 <= minimum_batch_size <= batch_size <= capacity:
             raise ValueError("invalid task replay batch/capacity")
         self.model = model
         self.replay = ExecutionReplay(capacity)
         self.batch_size, self.minimum_batch_size = batch_size, minimum_batch_size
-        self.max_updates, self.updates = _cap(max_updates), 0
+        self.experiment, self.device = bool(experiment), str(device)
+        self.max_updates, self.updates = _cap(max_updates, experiment=self.experiment), 0
         self.history = []
 
     def observe(self, transition):
@@ -345,15 +358,15 @@ class TaskReplayUpdater:
         if len(self.replay) < self.minimum_batch_size:
             return dict(skipped=True, reason="not_enough_factual_transitions", updates=self.updates)
         count = min(self.batch_size, len(self.replay))
-        self.model.prep_training(device="cpu")
-        sample = self.replay.sample(count)
+        self.model.prep_training(device=self.device)
+        sample = self.replay.sample(count, device=self.device)
         losses = []
         for i in range(4):
             critic, actor, _ = self.model.update(sample, i)
             losses.append(dict(agent=i, critic_loss=critic, actor_loss=actor,
                                actor_updated=bool(self.model.last_actor_updated)))
         self.model.update_all_targets()
-        self.model.prep_rollouts(device="cpu")
+        self.model.prep_rollouts(device=self.device)
         self.updates += 1
         row = dict(skipped=False, updates=self.updates, batch_size=count, agents=losses,
                    reward_source="unmodified_transition_rewards", resume_supported=False)
@@ -417,7 +430,7 @@ def load_checkpoint(path, *, verify_source=True, expected_source_identity=None, 
         state = payload["communication"]
         communication = CommunicationLearner(models.scheduler, state["critic_dim"], gamma=state["gamma"],
                          value_weight=state["value_weight"], entropy_weight=state["entropy_weight"],
-                         hidden_dim=state["hidden_dim"], max_updates=state["max_updates"])
+                         hidden_dim=state["hidden_dim"], max_updates=state["max_updates"], experiment=state.get("experiment", False))
         communication.critic.load_state_dict(state["critic"], strict=True)
         for name, value in communication.critic.state_dict().items():
             _finite(value, "restored communication critic " + name)

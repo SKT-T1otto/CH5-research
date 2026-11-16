@@ -1,5 +1,7 @@
 # 第五章配置
 
+2026-11-16新增 `check_experiment_v1.json`、`pilot_experiment_v1.json`、`formal_experiment_v1.json`，仅供独立的 `ch5-experiment` 入口使用。完整运行与预算见 `docs/CH5_LINUX_EXPERIMENTS_20261116.md`；pilot/formal须用户在Linux显式执行，不在本机启动。下文的四次更新上限继续约束旧short入口。
+
 short_pipeline_v1.json 是实际可执行的短测试配置，固定 configs/b2.json SHA-256，环境期限400步，外部每episode最多32步，总计最多8个episode；辅助/MADDPG最多各4次更新，通信最多2次episode后更新。
 
 采集的原生M20 seed699专门覆盖真实发现/目标消息/动态标签，seed67431保留普通场景。699由原生成器原样产生，初始Searcher0距目标约0.965米；这一选择只用于机制覆盖，不进入普通评价结果。评价采用独立seed97431，不根据结果筛选。

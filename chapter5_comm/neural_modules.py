@@ -204,6 +204,10 @@ class GeometryTemporalDecoder(nn.Module):
         _finite("elapsed", elapsed)
         if bool((elapsed < 0).any()):
             raise ValueError("elapsed cannot be negative")
+        if not getattr(self, "transport_enabled", True):
+            return z
+        if not getattr(self, "geometry_conditioning", True):
+            geometry = torch.zeros_like(geometry)
         dt = elapsed.to(dtype=z.dtype)[:, None] / self.integration_steps
         current = z
         for _ in range(self.integration_steps):

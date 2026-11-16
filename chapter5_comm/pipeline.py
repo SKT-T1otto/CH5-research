@@ -1,7 +1,8 @@
-"""Bounded factual collection -> labels -> learners -> checkpoint -> evaluation.
+"""Shared factual rollout and original bounded short-workflow orchestration.
 
 The 400-step parent task is never shortened. A short rollout is an external
 budget truncation with a nonterminal bootstrap, not a task failure or terminal.
+Manual Linux experiments reuse the rollout via the separate experiment runner.
 """
 from copy import deepcopy
 from dataclasses import asdict
@@ -100,14 +101,14 @@ def new_output(path):
     return path
 
 
-def task_model(base, seed):
+def task_model(base, seed, device="cpu"):
     from chapter3_bser.learning.model import build_model
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.set_num_threads(1)
-    model = build_model(base, device="cpu")
-    model.prep_rollouts(device="cpu")
+    model = build_model(base, device=device)
+    model.prep_rollouts(device=device)
     return model
 
 
@@ -131,10 +132,13 @@ def _tensor(value, boolean=False):
 
 
 def _encode(networks, inputs):
+    device = next(networks.encoder.parameters()).device
+    def tensor(value, boolean=False):
+        return _tensor(value, boolean).to(device)
     return networks.encoder(
-        _tensor(inputs["map_tokens"])[None], _tensor(inputs["dynamic_tokens"])[None],
-        _tensor(inputs["receiver_query"])[None], _tensor([inputs["query_available"]], True),
-        _tensor(inputs["map_mask"], True)[None], _tensor(inputs["dynamic_mask"], True)[None],
+        tensor(inputs["map_tokens"])[None], tensor(inputs["dynamic_tokens"])[None],
+        tensor(inputs["receiver_query"])[None], tensor([inputs["query_available"] and networks.config.query_conditioning], True),
+        tensor(inputs["map_mask"], True)[None], tensor(inputs["dynamic_mask"], True)[None],
     )
 
 
@@ -155,7 +159,7 @@ def _critic_features(runtime, sender):
     phase = [runtime.step / 400., float(truth["task_found"]), float(truth["executor_known"])]
     budgets = [runtime.channel.remaining_bits(i) / runtime.channel.capacity_bits for i in range(4)]
     queue = list(runtime.channel.queue)
-    ages = [max(0, runtime.step - int(item[-1].sample_step)) for item in queue] if queue and hasattr(queue[0][-1], "sample_step") else []
+    ages = [max(0, runtime.step - int(item[-1]["sample_step"])) for item in queue]
     transport = [len(queue) / 64., float(np.mean(ages)) / 400. if ages else 0., float(np.max(ages)) / 400. if ages else 0.]
     # This is a finite CTDE baseline summary, not a claim of exact Markov state.
     return np.r_[position, velocity, target, phase, budgets, transport, np.eye(4)[sender]].astype(np.float32)
@@ -171,7 +175,8 @@ def _context(runtime, sender, inputs):
 
 
 def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
-                output, learner=None, task_updater=None, record_labels=False):
+                output, learner=None, task_updater=None, record_labels=False,
+                explore=None, save_details=True, task_explore=None):
     from chapter5_comm.runtime import CH5Runtime
     if mode not in {"learned", "fixed", "neural_off"}:
         raise ValueError(mode)
@@ -180,6 +185,9 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
     snapshots, caches, pending, events, transitions, network_trace = {}, {i: [] for i in range(4)}, {}, [], [], []
     gamma, horizon = base["rl"]["gamma"], config["label_horizon"]
     last_observations = None
+    explore = record_labels if explore is None else bool(explore)
+    task_explore = explore if task_explore is None else bool(task_explore)
+    device = next(networks.decoder.parameters()).device
     model.reset_noise()
 
     def frame():
@@ -210,21 +218,31 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
                 cache[:] = [x for x in cache if runtime.step - x["source_step"] <= config["neural_cache_steps"]]
                 with torch.no_grad():
                     # Reconstruct exactly the encoder's on-wire int8 quantizer.
-                    tokens = delivered_tokens(cache)
-                    types = torch.tensor([x["stream_type"] for x in cache], dtype=torch.long)
-                    ages = _tensor([[max(0, runtime.step-x["source_step"]) * runtime.dt for x in cache]])
+                    tokens = delivered_tokens(cache).to(device)
+                    types = torch.tensor([x["stream_type"] for x in cache], dtype=torch.long, device=device)
+                    ages = _tensor([[max(0, runtime.step-x["source_step"]) * runtime.dt for x in cache]]).to(device)
                     geometry = runtime.local_geometry(receiver)
-                    decoded = networks.decoder(tokens, types, torch.ones(1, len(cache), dtype=torch.bool), ages, _tensor(geometry)[None])
+                    decoded = networks.decoder(tokens, types, torch.ones(1, len(cache), dtype=torch.bool, device=device), ages, _tensor(geometry)[None].to(device))
                     routes = runtime.route_features(receiver, horizon=horizon)
-                    logits = networks.route_head(decoded["map_context"], decoded["dynamic_context"], _tensor(routes["route_features"])[None])
+                    logits = networks.route_head(decoded["map_context"], decoded["dynamic_context"], _tensor(routes["route_features"])[None].to(device))
                     if mode != "neural_off":
                         runtime.install_decoded_state(receiver,
                             decoded={"has_dynamic": bool(decoded["has_dynamic"][0]) and
                                      any(x.get("target_available", False) for x in cache)},
-                            state_mean=decoded["state_mean"][0].numpy(),
-                            state_logvar=decoded["state_logvar"][0].numpy(),
-                            route_logits=logits[0].numpy(), route_data=routes)
+                            state_mean=decoded["state_mean"][0].cpu().numpy(),
+                            state_logvar=decoded["state_logvar"][0].cpu().numpy(),
+                            route_logits=logits[0].cpu().numpy(), route_data=routes)
                 network_trace.append(dict(step=runtime.step, receiver=receiver, packet_id=delivered["packet_id"], source_step=delivered["source_step"], has_dynamic=bool(decoded["has_dynamic"][0])))
+                # Training/evaluation diagnostics only, downstream of the actor
+                # input and installation. Truth never enters decoding or routing.
+                if runtime.locals[receiver].target is not None and any(x.get("target_available", False) for x in cache):
+                    truth = runtime.teacher_truth()
+                    mean = decoded["state_mean"][0].cpu().numpy()
+                    logvar = decoded["state_logvar"][0].cpu().numpy()
+                    actual = np.r_[truth["target_position"] / runtime.bounds, truth["target_velocity"] / 2.5]
+                    estimated = np.clip(mean[:3], 0., 1.) * runtime.bounds
+                    network_trace[-1].update(position_error=float(np.linalg.norm(estimated - truth["target_position"])),
+                        state_nll=float(.5 * np.mean(np.log(2 * np.pi) + logvar + (actual - mean)**2 * np.exp(-logvar))))
                 if record_labels:
                     inputs = deepcopy(snapshot["inputs"])
                     selected = snapshot["selected"]
@@ -245,14 +263,14 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
             inputs = runtime.tokenize(sender, receiver)
             with torch.no_grad():
                 encoded = _encode(networks, inputs)
-            event = dict(packet_tokens=encoded.tokens[0].numpy().copy(), context=_context(runtime, sender, inputs),
-                         packet_bits=encoded.packet_bits.numpy().copy(), budget_bits=runtime.channel.remaining_bits(sender),
-                         valid=encoded.valid[0].numpy().copy(), critic_features=_critic_features(runtime, sender),
+            event = dict(packet_tokens=encoded.tokens[0].cpu().numpy().copy(), context=_context(runtime, sender, inputs),
+                         packet_bits=encoded.packet_bits.cpu().numpy().copy(), budget_bits=runtime.channel.remaining_bits(sender),
+                         valid=encoded.valid[0].cpu().numpy().copy(), critic_features=_critic_features(runtime, sender),
                          episode_step=runtime.step, elapsed=0, discounted_reward=0.)
             if mode == "learned":
                 if learner is None:
                     raise ValueError("learned mode requires the communication learner")
-                choice = learner.choose(event, deterministic=not record_labels)
+                choice = learner.choose(event, deterministic=not explore)
             else:
                 feasible = np.flatnonzero(event["valid"] & (event["packet_bits"] <= event["budget_bits"]))
                 action = int(feasible[(runtime.step // 4) % len(feasible)]) if len(feasible) and mode != "neural_off" else len(event["valid"])
@@ -262,7 +280,7 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
             selected = int(choice["action"])
             if selected < encoded.tokens.shape[1]:
                 key = f"{episode_id}:{runtime.step}:{sender}:{receiver}:{selected}"
-                sent = runtime.send_latent(sender, receiver, encoded.codes[0, selected].numpy(),
+                sent = runtime.send_latent(sender, receiver, encoded.codes[0, selected].cpu().numpy(),
                     int(encoded.stream_types[selected]), source_step=runtime.step, metadata_id=key,
                     target_available=bool(inputs["dynamic_mask"][-1] and int(encoded.stream_types[selected]) == 1))
                 if sent["accepted"]:
@@ -278,7 +296,7 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
                 if task_updater is not None:
                     task_updater.observe(previous)
             with torch.no_grad():
-                actions = torch.cat(model.step(observations, explore=record_labels), dim=0).detach().cpu().numpy()
+                actions = torch.cat(model.step(observations, explore=task_explore), dim=0).detach().cpu().numpy()
             transition = runtime.advance(actions)
             transition.update(replay_eligible=False, next_observation_phase="post_physics_pending_channel")
             transitions.append(transition)
@@ -303,14 +321,20 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
                        completed_task_episode=bool(runtime.terminal), neural_delivery_applications=len(network_trace),
                        censored_communication_intervals=len(pending),
                        replay_eligible_transitions=sum(x["replay_eligible"] for x in transitions))
+        state_rows = [x for x in network_trace if "position_error" in x]
+        summary.update(state_estimate_count=len(state_rows),
+            mean_state_position_error=float(np.mean([x["position_error"] for x in state_rows])) if state_rows else None,
+            mean_normalized_state_nll=float(np.mean([x["state_nll"] for x in state_rows])) if state_rows else None)
         examples = recorder.labels(horizon, detect_radius=1., dynamic_horizon=0) if record_labels else []
         output.mkdir(parents=True, exist_ok=False)
-        recorder.write_jsonl(output / "factual_trajectory.jsonl")
-        write_labels(output / "labels.jsonl", examples)
+        if save_details or record_labels:
+            recorder.write_jsonl(output / "factual_trajectory.jsonl")
+            write_labels(output / "labels.jsonl", examples)
         write_json(output / "summary.json", summary)
-        write_json(output / "communication_events.json", events)
-        write_json(output / "network_deliveries.json", network_trace)
-        write_json(output / "task_transitions.json", transitions)
+        if save_details:
+            write_json(output / "communication_events.json", events)
+            write_json(output / "network_deliveries.json", network_trace)
+            write_json(output / "task_transitions.json", transitions)
         return dict(summary=summary, examples=examples, events=events, last_observations=last_observations)
     except Exception as error:
         # Preserve factual partial runs instead of silently discarding failures.
