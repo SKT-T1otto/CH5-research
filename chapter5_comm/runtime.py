@@ -18,6 +18,7 @@ from core.env.mission_env import MissionCoreEnv, environment_kwargs_from_config
 from core.env.target_motion import TargetState, predict_target_state, swept_relative_min_distance
 from core.env.task_protocol import PROTOCOL_FIELDS, strict_terminal, validate_task_config
 from core.env.uav_env import UAVEnv
+from core.mapping.path_planner import OnlineUnknownMapTaskPlanner
 from chapter3_bser.learning.base_runtime import seed_innovations
 from chapter3_bser.rewards.training_env import Phase1CV2TrainingEnv
 from chapter3_bser.protocols.team_environment import PRRACTrainingEnv
@@ -63,6 +64,39 @@ class _LocalAgent:
         self.acks = deque(maxlen=32)
 
 
+class _BootstrapEndpointGuard:
+    """Keep an unresolved initial point without asserting map reachability.
+
+    The inherited reset samples initial waypoints twice, including after scans
+    quantize occupancy. A physically generated start may lie in a cell that
+    the current uncertain map cannot connect. Only defer that diagnostic
+    waypoint; do not clear occupancy, move the vehicle, resample the scenario,
+    or alter collision/reward rules. CH5 local planning starts after reset.
+    """
+    def initial_search_targets(self, agent_positions):
+        positions = self._as_points(agent_positions)
+        if positions.shape != (self.n_search, 3) or not bool(torch.isfinite(positions).all()):
+            raise ValueError("initial search positions must be a finite n_search x 3 tensor")
+        if bool(((positions < 0.) | (positions > self.space_size)).any()):
+            raise ValueError("initial search positions must remain inside the mission world")
+        self.ch5_bootstrap_endpoint_deferrals = []
+        targets, reserved = [], []
+        for agent in range(self.n_search):
+            status = self.endpoint_status(positions[agent], role="searcher")
+            if status["reachable"]:
+                target = self.sample_next_waypoint(agent, positions[agent], reserved_positions=reserved)
+            else:
+                target = positions[agent].clone()
+                self.ch5_bootstrap_endpoint_deferrals.append(dict(agent=agent, reason=status["failure_reason"]))
+            targets.append(target)
+            reserved.append(target)
+        return torch.stack(targets)
+
+
+class _CH5BootstrapPlanner(_BootstrapEndpointGuard, OnlineUnknownMapTaskPlanner):
+    """Original online-map kernel with guarded CH5 bootstrap only."""
+
+
 class _CommunicatingUAVEnv(UAVEnv):
     """Only communication-dependent hooks differ from the inherited task."""
     def __init__(self, owner, **kwargs):
@@ -71,6 +105,20 @@ class _CommunicatingUAVEnv(UAVEnv):
 
     def _active(self):
         return bool(self._comm_owner._ready)
+
+    def _build_obstacle_planner(self):
+        if self.obstacle_knowledge_mode != "online_unknown":
+            return super()._build_obstacle_planner()
+        kwargs = self._planner_common_kwargs()
+        # Same inherited parameters; only the initial waypoint boundary differs.
+        names = ("occupancy_free_logodds", "occupancy_occupied_logodds", "occupancy_logodds_clip",
+            "occupancy_free_threshold", "occupancy_occupied_threshold", "occupancy_unknown_cost_weight",
+            "occupancy_risk_cost_weight", "occupancy_replan_probability_delta",
+            "target_negative_observation_strength", "target_negative_likelihood_floor",
+            "target_revisit_half_life_steps", "target_recency_penalty_weight",
+            "obstacle_information_gain_weight", "reservation_decay")
+        kwargs.update({name: getattr(self, name) for name in names})
+        return _CH5BootstrapPlanner(**kwargs)
 
     def _advance_fixed_handoff(self):
         if not self._active():
@@ -717,6 +765,8 @@ class CH5Runtime:
             channel=self.channel.summary(), communication_protocol="ch5_all_channel_tdma_v1",
             source_reward_adapter="Phase1CV2TrainingEnv+PRRACTrainingEnv", local_map_count=4,
             task_deadline_steps=int(self.physical.max_steps))
+        row["bootstrap_endpoint_deferrals"] = deepcopy(getattr(self.physical.map_module,
+            "ch5_bootstrap_endpoint_deferrals", []))
         return row
 
     def close(self):

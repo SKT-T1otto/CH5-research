@@ -15,7 +15,7 @@ case "$command" in
   check)
     device="${2:-cpu}"
     "$PYTHON_BIN" -m pip check
-    "$PYTHON_BIN" -B -m unittest checks.test_ch5_neural_modules checks.test_ch5_data checks.test_ch5_training checks.test_ch5_runtime checks.test_ch5_pipeline checks.test_ch5_experiments
+    "$PYTHON_BIN" -B -m unittest checks.test_ch5_neural_modules checks.test_ch5_data checks.test_ch5_training checks.test_ch5_runtime checks.test_ch5_pipeline checks.test_ch5_experiments checks.test_ch5_reset
     run="outputs/chapter5/linux_check_$(date +%Y%m%d_%H%M%S)_$$"
     "$PYTHON_BIN" -B cli.py ch5-experiment prepare --config configs/chapter5/check_experiment_v1.json --root "$run" --execute
     "$PYTHON_BIN" -B cli.py ch5-experiment suite --root "$run" --device "$device" --resume --execute

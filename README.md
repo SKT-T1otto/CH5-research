@@ -6,6 +6,8 @@
 
 2026-11-16新增：[Linux完整实验手册](docs/CH5_LINUX_EXPERIMENTS_20261116.md)。入口为 `bash scripts/ch5_linux.sh` / `python -B cli.py ch5-experiment`，提供check、pilot、formal配置、多种子重训消融、故障扫描、验证选模、边界续跑及CSV/JSON汇总。旧 `ch5 smoke/train` 保留短测限制。Linux/CUDA实机与正式训练结果由服务器运行后验收。
 
+2026-11-17：[pilot初始化端点修复](docs/CH5_RESET_ENDPOINT_FIX_20261117.md)。保留原生场景及地图证据，对初扫后暂不可规划的起点延后初始航点；新增原失败场景回归。更新源码后须新建RUN，原失败目录保留。
+
 从 GitHub 获取并安装（建议 Python 3.10，保留文件原始换行）：
 
 ```bash
