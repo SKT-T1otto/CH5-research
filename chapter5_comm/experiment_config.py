@@ -10,7 +10,9 @@ from .training import NeuralConfig, _source_identity
 
 SCHEMA = "ch5.linux.experiment.v1"
 ARMS = ("full", "fixed_scheduler", "raw_only", "no_query", "no_transport",
-        "no_geometry", "no_time_loss", "no_route_loss")
+        "no_geometry", "no_time_loss", "no_route_loss", "d2_zero", "d2_b2")
+D2_ARMS = frozenset(("d2_zero", "d2_b2"))
+RAW_ARMS = D2_ARMS | {"raw_only"}
 
 
 def canonical(value):
@@ -25,7 +27,7 @@ def source_identity():
         for p in sorted((PROJECT / folder).rglob("*")):
             if p.is_file() and (folder == "scripts" or p.suffix == ".json"):
                 identity[p.relative_to(PROJECT).as_posix()] = hashlib.sha256(p.read_bytes()).hexdigest()
-    for name in ("cli.py", "requirements.txt", ".gitattributes"):
+    for name in ("cli.py", "requirements.txt", ".gitattributes", "configs/allocation.json"):
         identity[name] = hashlib.sha256((PROJECT / name).read_bytes()).hexdigest()
     return identity
 
@@ -37,7 +39,7 @@ def read_experiment(path):
     c = json.loads(path.read_text(encoding="utf-8"))
     if c.get("config_name") != path.name:
         raise ValueError("config_name must identify the preset filename")
-    if c.get("schema") != SCHEMA or c.get("kind") not in ("check", "pilot", "formal"):
+    if c.get("schema") != SCHEMA or c.get("kind") not in ("check", "baseline", "pilot", "formal"):
         raise ValueError("requires a versioned CH5 experiment configuration")
     _, base = read_config("configs/chapter5/short_pipeline_v1.json")
     if c["parent_config_sha256"] != hashlib.sha256((PROJECT / "configs/b2.json").read_bytes()).hexdigest():
@@ -46,13 +48,17 @@ def read_experiment(path):
         raise ValueError("training seeds must be unique nonnegative integers below one million")
     if not c["arms"] or len(set(c["arms"])) != len(c["arms"]) or set(c["arms"]) - set(ARMS):
         raise ValueError("unknown or duplicate independently trained arm")
+    if set(c["arms"]) & D2_ARMS and c.get("navigation") != "causal_d2_v1":
+        raise ValueError("D2 control arms require causal D2 navigation")
+    if c.get("navigation", "local_waypoints_v1") not in ("local_waypoints_v1", "causal_d2_v1"):
+        raise ValueError("unknown experiment navigation")
     for key in ("collection_episodes", "auxiliary_updates", "auxiliary_batch_size", "task_episodes", "communication_episodes", "validation_episodes", "evaluation_episodes", "checkpoint_interval", "validation_interval", "replay_capacity", "task_batch_size", "task_warmup", "task_update_frequency", "task_updates_per_trigger", "label_horizon", "auxiliary_checkpoint_interval"):
         if type(c[key]) is not int or not 1 <= c[key] <= 1000000:
             raise ValueError("invalid positive budget: " + key)
     if type(c["rollout_limit_steps"]) is not int or not 1 <= c["rollout_limit_steps"] <= 400:
         raise ValueError("invalid rollout limit")
     if c["kind"] != "check" and c["rollout_limit_steps"] != 400:
-        raise ValueError("pilot/formal must evaluate the unchanged full 400-step task")
+        raise ValueError("baseline/pilot/formal must evaluate the unchanged full 400-step task")
     if c["task_batch_size"] > c["task_warmup"] or c["task_warmup"] > c["replay_capacity"]:
         raise ValueError("requires batch_size <= warmup <= replay capacity")
     max_task = c["task_episodes"] * c["rollout_limit_steps"] // c["task_update_frequency"] * c["task_updates_per_trigger"]
@@ -74,8 +80,14 @@ def read_experiment(path):
             raise ValueError("incompatible runtime feature/header contract: " + key)
     NeuralConfig.from_mapping(c["neural"])
     required = {"nominal", "loss_high", "delay_high", "burst_long", "budget_low", "combined_unseen", "reliable_reference"}
-    if c["kind"] != "check" and not required.issubset(c["evaluation_channels"]):
+    if c["kind"] in ("pilot", "formal") and not required.issubset(c["evaluation_channels"]):
         raise ValueError("missing preregistered fault conditions")
+    if c["kind"] == "baseline":
+        budget = plan_summary(c)
+        if (set(c["arms"]) != D2_ARMS or budget["independent_jobs"] != 2
+                or budget["episodes_per_job_upper_bound"] > 8 or max_task > 4
+                or set(c["evaluation_channels"]) != {"reliable_reference", "combined_unseen"}):
+            raise ValueError("baseline requires one matched D2 pair, two declared channels, and a bounded run")
     from .protocol import TDMAChannel
     TDMAChannel(**c["channel"])
     for name, patch in c["evaluation_channels"].items():
@@ -93,7 +105,7 @@ def arm_settings(c, arm):
                   geometry_conditioning=arm != "no_geometry")
     losses = dict(route_weight=0. if arm == "no_route_loss" else 1.,
                   prediction_weight=1., time_weight=0. if arm in ("no_time_loss", "no_transport") else .1)
-    mode = "neural_off" if arm == "raw_only" else "fixed" if arm == "fixed_scheduler" else "learned"
+    mode = "neural_off" if arm in RAW_ARMS else "fixed" if arm == "fixed_scheduler" else "learned"
     return neural, losses, mode
 
 
@@ -112,9 +124,10 @@ def plan_summary(c):
     train = c["collection_episodes"] + c["task_episodes"] + c["communication_episodes"]
     evaluate = validations * c["validation_episodes"] + len(c["evaluation_channels"]) * c["evaluation_episodes"]
     return dict(kind=c["kind"], independent_jobs=jobs, seeds=c["seeds"], arms=c["arms"],
+                navigation=c.get("navigation", "local_waypoints_v1"),
                 task_horizon=400, rollout_limit=c["rollout_limit_steps"],
                 maximum_physical_steps=jobs * (train + evaluate) * c["rollout_limit_steps"],
                 episodes_per_job_upper_bound=train + evaluate,
                 conditions=list(c["evaluation_channels"]),
                 formal_performance_verified=False,
-                execution="manual --execute required; pilot/formal execution requires Linux")
+                execution="manual --execute required; baseline/pilot/formal execution requires Linux")

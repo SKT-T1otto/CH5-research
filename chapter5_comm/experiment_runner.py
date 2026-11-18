@@ -11,12 +11,13 @@ from importlib import metadata
 
 import torch
 import numpy as np
+from chapter3_bser.learning.reference import ZeroResidualPolicy
 
 from .pipeline import (PROJECT, auxiliary_batch, new_output, run_episode, scenarios,
                        task_model, write_json, evaluation_summary)
 from .training import (AuxiliaryTrainer, CommunicationLearner, TaskReplayUpdater,
                        build_neural_models, freeze_auxiliary)
-from .experiment_config import (canonical, read_experiment, source_identity, arm_settings,
+from .experiment_config import (RAW_ARMS, canonical, read_experiment, source_identity, arm_settings,
                                 scene_seed, plan_summary)
 from .experiment_state import (append_json, exclusive_job, latest_receipt, load_state,
                                save_state, load_replay, restore_rng, atomic_json)
@@ -76,7 +77,7 @@ def device_name(request):
 
 def execution_guard(c):
     if c["kind"] != "check" and platform.system() != "Linux":
-        raise ValueError("pilot/formal execution is reserved for manual Linux runs; use check locally")
+        raise ValueError("baseline/pilot/formal execution requires Linux; use a check locally")
 
 
 def identity_for(plan, seed, arm):
@@ -91,13 +92,14 @@ def job_path(root, seed, arm):
 
 def build_objects(c, base, seed, arm, device):
     neural, losses, mode = arm_settings(c, arm)
-    model = task_model(base, seed, device=device)
+    model = ZeroResidualPolicy() if arm == "d2_zero" else task_model(base, seed, device=device)
     networks = build_neural_models(neural, device=device)
     auxiliary = AuxiliaryTrainer(networks, max_updates=c["auxiliary_updates"], experiment=True, **losses)
     communication = CommunicationLearner(networks.scheduler, 44, gamma=base["rl"]["gamma"],
         max_updates=c["communication_episodes"], experiment=True)
     maximum = c["task_episodes"] * c["rollout_limit_steps"] // c["task_update_frequency"] * c["task_updates_per_trigger"]
-    task = TaskReplayUpdater(model, capacity=c["replay_capacity"], batch_size=c["task_batch_size"],
+    task = None if arm == "d2_zero" else TaskReplayUpdater(
+        model, capacity=c["replay_capacity"], batch_size=c["task_batch_size"],
         minimum_batch_size=c["task_batch_size"], max_updates=maximum, experiment=True, device=device)
     return networks, model, auxiliary, communication, task, mode
 
@@ -105,12 +107,15 @@ def build_objects(c, base, seed, arm, device):
 def restore_objects(payload, objects, device):
     n, model, auxiliary, comm, task, _ = objects
     n.load_state_dict(payload["networks"], strict=True)
-    model.load_training_state_dict(payload["model"])
-    model.prep_rollouts(device=device)
-    for agent, state in zip(model.agents, payload["exploration"]):
-        agent.noise.state.copy_(state["state"].to(device))
-        agent.noise.sigma = state["sigma"]
-        agent.current_sigma = state["current_sigma"]
+    if (task is None) != (payload["model"] is None) or (task is None) != (payload["task"] is None):
+        raise ValueError("task policy in checkpoint differs from the frozen arm")
+    if task is not None:
+        model.load_training_state_dict(payload["model"])
+        model.prep_rollouts(device=device)
+        for agent, state in zip(model.agents, payload["exploration"]):
+            agent.noise.state.copy_(state["state"].to(device))
+            agent.noise.sigma = state["sigma"]
+            agent.current_sigma = state["current_sigma"]
     auxiliary.optimizer.load_state_dict(payload["auxiliary"]["optimizer"])
     auxiliary.updates = payload["auxiliary"]["updates"]
     auxiliary.history = payload["auxiliary"]["history"]
@@ -119,9 +124,10 @@ def restore_objects(payload, objects, device):
     comm.updates = payload["communication"]["updates"]
     comm.policy_version = payload["communication"]["policy_version"]
     comm.history = payload["communication"]["history"]
-    task.updates = payload["task"]["updates"]
-    task.history = payload["task"]["history"]
-    load_replay(task.replay, payload["task"]["replay"])
+    if task is not None:
+        task.updates = payload["task"]["updates"]
+        task.history = payload["task"]["history"]
+        load_replay(task.replay, payload["task"]["replay"])
     # Optimizer restoration maps momentum tensors to their parameter device.
     for optimizer in (auxiliary.optimizer, comm.optimizer):
         for state in optimizer.state.values():
@@ -150,6 +156,7 @@ class OnlineTaskUpdates:
 
 def episode_config(c, channel=None):
     return dict(rollout_limit_steps=c["rollout_limit_steps"], label_horizon=c["label_horizon"],
+                navigation=c.get("navigation", "local_waypoints_v1"),
                 neural_cache_steps=32, channel=deepcopy(c["channel"] if channel is None else channel))
 
 
@@ -162,15 +169,17 @@ def factual_scene(seed, split, index):
 
 def episode(c, base, objects, *, seed, split, index, directory, mode, labels=False,
             updater=None, channel=None, scene=None, stochastic=False):
-    n, model, _, learner, _, _ = objects
+    n, model, _, learner, task, _ = objects
     scene = factual_scene(seed, split, index) if scene is None else scene
     case_seed = scene_seed(seed, split, index) % (2 ** 31 - 1)
     started = time.perf_counter()
     result = run_episode(episode_config(c, channel), base, scene, n, model, seed=case_seed,
         mode=mode, episode_id=f"{split}_{index}", output=directory, learner=learner,
         task_updater=updater, record_labels=labels, explore=stochastic,
-        task_explore=stochastic and split in ("collection", "task"), save_details=c["save_episode_details"])
-    result["summary"].update(wall_seconds=time.perf_counter() - started, scenario_generator_seed=scene.get("scenario_seed"))
+        task_explore=task is not None and stochastic and split in ("collection", "task"), save_details=c["save_episode_details"])
+    result["summary"].update(wall_seconds=time.perf_counter() - started, scenario_generator_seed=scene.get("scenario_seed"),
+                             task_policy="D2_ZERO" if task is None else "B2_MADDPG_RESIDUAL",
+                             task_update_count=0 if task is None else task.updates)
     write_json(directory / "experiment_episode.json", result["summary"])
     return result
 
@@ -195,21 +204,24 @@ def train(root, seed, arm, *, device="cpu", resume=False, stop_after=None):
         write_json(attempt / "environment.json", environment(device))
         objects = build_objects(c, base, seed, arm, device)
         n, model, auxiliary, learner, task, final_mode = objects
+        preparation_mode = "neural_off" if arm in RAW_ARMS else "fixed"
         progress = dict(collection=0, auxiliary=0, task=0, communication=0, serial=0,
             collection_paths=[], best_score=None, best_serial=None, complete=False)
         clock = 0
         if receipt:
             payload = load_state(job, receipt["path"], identity)
             restore_objects(payload, objects, device)
-            progress, clock = payload["progress"], payload["task"]["clock"]
-        updater = OnlineTaskUpdates(task, c, log, clock)
+            progress = payload["progress"]
+            clock = 0 if task is None else payload["task"]["clock"]
+        updater = None if task is None else OnlineTaskUpdates(task, c, log, clock)
 
         def checkpoint(score=None):
             progress["serial"] += 1
             if score is not None and (progress["best_score"] is None or score > progress["best_score"]):
                 progress.update(best_score=score, best_serial=progress["serial"])
             return save_state(job, identity=identity, progress=deepcopy(progress), networks=n,
-                model=model, auxiliary=auxiliary, communication=learner, task=task, task_clock=updater.clock)
+                model=model, auxiliary=auxiliary, communication=learner, task=task,
+                task_clock=0 if updater is None else updater.clock)
 
         try:
             for i in range(progress["collection"], c["collection_episodes"]):
@@ -217,17 +229,17 @@ def train(root, seed, arm, *, device="cpu", resume=False, stop_after=None):
                 if i < len(c["collection_mechanism_seeds"]):
                     scene = scenarios(1, c["collection_mechanism_seeds"][i])[0]
                 result = episode(c, base, objects, seed=seed, split="collection", index=i,
-                    directory=attempt / f"collection_{i}", mode="neural_off" if arm == "raw_only" else "fixed",
-                    labels=arm != "raw_only", scene=scene, stochastic=True)
+                    directory=attempt / f"collection_{i}", mode=preparation_mode,
+                    labels=arm not in RAW_ARMS, scene=scene, stochastic=True)
                 append_json(log, dict(stage="collection", **result["summary"]))
-                if arm != "raw_only":
+                if arm not in RAW_ARMS:
                     progress["collection_paths"].append((attempt / f"collection_{i}" / "labels.jsonl").relative_to(job).as_posix())
                 progress["collection"] = i + 1
                 checkpoint()
             if stop_after == "collection":
                 return dict(status="stopped_at_collection_boundary", **progress)
             examples = []
-            if arm != "raw_only":
+            if arm not in RAW_ARMS:
                 for relative in progress["collection_paths"]:
                     examples.extend(json.loads(line) for line in (job / relative).read_text(encoding="utf-8").splitlines())
                 positive = sum(sum(y * valid for y, valid in zip(x["route_labels"], x["route_valid"])) for x in examples)
@@ -252,7 +264,7 @@ def train(root, seed, arm, *, device="cpu", resume=False, stop_after=None):
             examples.clear()
             for i in range(progress["task"], c["task_episodes"]):
                 result = episode(c, base, objects, seed=seed, split="task", index=i,
-                    directory=attempt / f"task_{i}", mode="neural_off" if arm == "raw_only" else "fixed",
+                    directory=attempt / f"task_{i}", mode=preparation_mode,
                     updater=updater, stochastic=True)
                 append_json(log, dict(stage="task", **result["summary"]))
                 progress["task"] = i + 1

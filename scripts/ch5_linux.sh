@@ -26,9 +26,15 @@ case "$command" in
     "$PYTHON_BIN" -B cli.py ch5-experiment plan --config "configs/chapter5/${profile}_experiment_v1.json"
     ;;
   prepare)
-    profile="${2:?Usage: prepare pilot|formal RUN}"
+    profile="${2:?Usage: prepare d2_short|pilot|formal RUN}"
     run="${3:?Provide a fresh outputs/chapter5/RUN directory}"
     "$PYTHON_BIN" -B cli.py ch5-experiment prepare --config "configs/chapter5/${profile}_experiment_v1.json" --root "$run" --execute
+    ;;
+  d2-short)
+    run="${2:?Usage: d2-short RUN [cpu|cuda|auto]}"
+    device="${3:-cpu}"
+    "$PYTHON_BIN" -B cli.py ch5-experiment prepare --config configs/chapter5/d2_short_experiment_v1.json --root "$run" --execute
+    "$PYTHON_BIN" -B cli.py ch5-experiment suite --root "$run" --device "$device" --resume --execute
     ;;
   train|evaluate|all)
     run="${2:?Usage: train|evaluate|all RUN [cpu|cuda|auto]}"
@@ -41,8 +47,9 @@ case "$command" in
     ;;
   *)
     echo 'Usage: bash scripts/ch5_linux.sh check [cpu|cuda|auto]'
-    echo '       bash scripts/ch5_linux.sh plan [pilot|formal]'
-    echo '       bash scripts/ch5_linux.sh prepare pilot|formal outputs/chapter5/RUN'
+    echo '       bash scripts/ch5_linux.sh d2-short outputs/chapter5/RUN [cpu|cuda|auto]'
+    echo '       bash scripts/ch5_linux.sh plan [d2_short|pilot|formal]'
+    echo '       bash scripts/ch5_linux.sh prepare d2_short|pilot|formal outputs/chapter5/RUN'
     echo '       bash scripts/ch5_linux.sh train|evaluate|all outputs/chapter5/RUN [cpu|cuda|auto]'
     echo '       bash scripts/ch5_linux.sh report outputs/chapter5/RUN'
     [[ "$command" == help ]] || exit 2

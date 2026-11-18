@@ -131,11 +131,13 @@ def save_state(directory, *, identity, progress, networks, model, auxiliary, com
     path.parent.mkdir(parents=True, exist_ok=True)
     # Snapshot only between physical episodes; no active simulator is serialized.
     payload = dict(schema=STATE_SCHEMA, identity=identity, progress=progress,
-        source=source_identity(), networks=networks.state_dict(), model=model.training_state_dict(),
+        source=source_identity(), networks=networks.state_dict(),
+        model=None if task is None else model.training_state_dict(),
         exploration=[dict(state=agent.noise.state.detach().cpu().clone(), sigma=agent.noise.sigma,
-                          current_sigma=agent.current_sigma) for agent in model.agents],
+                          current_sigma=agent.current_sigma) for agent in model.agents] if task is not None else [],
         auxiliary=auxiliary.state_dict(), communication=communication.state_dict(),
-        task=dict(updates=task.updates, history=task.history, replay=replay_state(task.replay), clock=task_clock),
+        task=None if task is None else dict(updates=task.updates, history=task.history,
+                                           replay=replay_state(task.replay), clock=task_clock),
         rng=rng_state(), resume_scope="last_committed_episode_or_auxiliary_update_boundary")
     with path.open("xb") as f:
         torch.save(payload, f)

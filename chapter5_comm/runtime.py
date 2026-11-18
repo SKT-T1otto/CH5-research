@@ -15,7 +15,7 @@ import numpy as np
 
 from core.config.active_environment import build_ch3_config
 from core.env.mission_env import MissionCoreEnv, environment_kwargs_from_config
-from core.env.target_motion import TargetState, predict_target_state, swept_relative_min_distance
+from core.env.target_motion import TargetState, predict_target_state, solve_intercept_point, swept_relative_min_distance
 from core.env.task_protocol import PROTOCOL_FIELDS, strict_terminal, validate_task_config
 from core.env.uav_env import UAVEnv
 from core.mapping.path_planner import OnlineUnknownMapTaskPlanner
@@ -23,6 +23,7 @@ from chapter3_bser.learning.base_runtime import seed_innovations
 from chapter3_bser.rewards.training_env import Phase1CV2TrainingEnv
 from chapter3_bser.protocols.team_environment import PRRACTrainingEnv
 from chapter3_bser.experiments.coupled_search_v1.execution_forecast import nominal_step
+from .d2_navigation import LocalD2Allocator
 from .protocol import Kind, TDMAChannel
 
 
@@ -50,6 +51,7 @@ class _LocalAgent:
         self.peers, self.queries = {}, {}
         self.target = None
         self.command = None
+        self.last_command_step = -1
         self.scan = None
         self.scan_seen = set()
         self.goal = np.asarray(position, float).copy()
@@ -58,6 +60,9 @@ class _LocalAgent:
         self.path_index = 0
         self.last_plan = -100000
         self.last_goal = None
+        self.last_allocation = -100000
+        self.allocation = {}
+        self.intercept_key = None
         self.soft_state = None
         self.soft_route = None
         self.soft_step = -1
@@ -139,6 +144,9 @@ class _CommunicatingUAVEnv(UAVEnv):
             return super()._refresh_intercept(current_step)
         local = self._comm_owner.locals[3]
         if local.target is not None:
+            if self._comm_owner.d2_allocator is not None:
+                self._comm_owner._refresh_local_intercept(current_step)
+                return
             estimate = self._comm_owner.predict_local_target(3)
             self.predicted_intercept_position = estimate.position.copy()
             self._agent_task_est[3].copy_(self._vec(estimate.position))
@@ -252,12 +260,17 @@ class CH5Runtime:
     frames early. max_steps always remains the original configured deadline.
     """
     def __init__(self, config, scenario=None, *, seed=1, episode_id=0,
-                 channel_config=None, horizon=8, candidate_count=4, map_token_count=32):
+                 channel_config=None, horizon=8, candidate_count=4, map_token_count=32,
+                 navigation="local_waypoints_v1"):
         validate_task_config(config)
         self.config, self.scenario = deepcopy(config), deepcopy(scenario)
         self.seed, self.episode_id = int(seed), int(episode_id)
         self.horizon, self.candidate_count = int(horizon), int(candidate_count)
         self.map_token_count = int(map_token_count)
+        if navigation not in ("local_waypoints_v1", "causal_d2_v1"):
+            raise ValueError("unknown Chapter 5 navigation")
+        self.navigation = navigation
+        self.d2_allocator = LocalD2Allocator() if navigation == "causal_d2_v1" else None
         if min(self.horizon, self.candidate_count, self.map_token_count) <= 0:
             raise ValueError("positive feature dimensions required")
         self._ready = False
@@ -405,11 +418,80 @@ class CH5Runtime:
         except RuntimeError:
             return np.asarray(position, float).copy()
 
+    def _allocate_local_d2(self, agent):
+        local, env = self.locals[agent], self.physical
+        if self.step - local.last_allocation >= env.path_replan_interval:
+            local.allocation = self.d2_allocator.allocate(
+                mapper=local.mapper, step=self.step, receiver=agent,
+                position=_np(env._agent_pos[agent]), velocity=_np(env._agent_vel[agent]),
+                peers=local.peers, specs=env.agent_specs, standby_goal=local.goal,
+            )
+            local.last_allocation = self.step
+        return local.allocation
+
+    def _refresh_local_intercept(self, current_step):
+        env, local = self.physical, self.locals[3]
+        state = local.target
+        if local.soft_state is not None and current_step - local.soft_step <= self.horizon:
+            state = self.predict_local_target(3)
+            state.sample_step = int(current_step)
+        position = _np(env._agent_pos[3])
+        key = (current_step, local.mapper.map_revision, position.tobytes(),
+               state.sample_step, state.position.tobytes(), state.velocity.tobytes())
+        if key == local.intercept_key:
+            return
+        local.intercept_key = key
+
+        def travel_time(start, goal):
+            result = local.mapper.grid_geodesic_cost(start, goal, role="executor")
+            return float(result.get("travel_time", result["cost"])) if result["reachable"] else float("inf")
+
+        options = dict(dt=env.dt, bounds=self.bounds, max_iterations=env.executor_intercept_iterations,
+                       max_reflections=env.target_max_reflections_per_step,
+                       max_prediction_steps=env.max_steps + env.failure_penalty_steps)
+        try:
+            result = solve_intercept_point(position, state, current_step, travel_time,
+                obstacles=local.mapper.known_obstacle_aabbs(), clearance=env.target_obstacle_clearance, **options)
+        except (RuntimeError, ValueError):
+            env.target_prediction_map_fallback_count += 1
+            result = solve_intercept_point(position, state, current_step, travel_time, **options)
+        env.predicted_intercept_position = result["position"]
+        if result["reachable"]:
+            env._agent_task_est[3].copy_(env._vec(result["position"]))
+        else:
+            env.path_unreachable_count += 1
+
+    def _d2_goal(self, agent, position):
+        local, env = self.locals[agent], self.physical
+        if agent == 3 and local.target is not None:
+            self._refresh_local_intercept(self.step)
+            goal = env.predicted_intercept_position
+            return position if goal is None else goal
+        if agent < 3 and local.target is not None:
+            return position
+        arrived = local.last_goal is None or np.linalg.norm(local.goal - position) <= env.search_arrive_eps
+        if agent < 3 and local.command is not None:
+            goal = local.command[1]
+            if np.linalg.norm(goal - position) > env.search_arrive_eps:
+                return goal
+            local.command = None
+        if agent == 3 or arrived or not local.path:
+            goal = self._allocate_local_d2(agent).get(agent)
+            if goal is not None:
+                if agent < 3 and local.last_goal is not None and arrived and np.linalg.norm(goal - local.goal) > env.search_arrive_eps:
+                    self.local_reached[agent] += 1
+                    self.local_assigned[agent] += 1
+                return goal
+            return position
+        return local.goal
+
     def _update_navigation(self, force=False):
         env = self.physical
         for i, local in enumerate(self.locals):
             position = _np(env._agent_pos[i])
-            if i < 3 and local.target is not None:
+            if self.d2_allocator is not None:
+                local.goal = self._d2_goal(i, position)
+            elif i < 3 and local.target is not None:
                 local.goal = position.copy()
             elif i == 3 and local.target is not None:
                 local.goal = self.predict_local_target(i).position.copy()
@@ -483,9 +565,15 @@ class CH5Runtime:
                 sample = local.target.sample_step
                 payload = VEC6.pack(*np.r_[local.target.position, local.target.velocity])
             elif kind == Kind.COMMAND:
-                peer_sample, peer_position, _ = local.peers[receiver]
-                # Host uses only a received peer state and its own legal map.
-                goal = self._sample_goal(receiver, peer_position, mapper=local.mapper)
+                if self.d2_allocator is None:
+                    _, peer_position, _ = local.peers[receiver]
+                    goal = self._sample_goal(receiver, peer_position, mapper=local.mapper)
+                else:
+                    goal = self._allocate_local_d2(sender).get(receiver)
+                    if goal is None:
+                        self._receiver_turn[sender, kind] += 1
+                        continue
+                    sample = local.last_allocation
                 payload = GOAL3.pack(*goal)
             else:
                 receiver, packet_id = local.acks[0]
@@ -530,8 +618,9 @@ class CH5Runtime:
             if old is None or packet.sample_step >= old[0]:
                 local.queries[packet.sender] = (packet.sample_step, np.array(QUERY9.unpack(body), np.float32))
         elif kind == Kind.COMMAND:
-            if packet.sender == 0 and (local.command is None or packet.sample_step >= local.command[0]):
+            if packet.sender == 0 and packet.sample_step > local.last_command_step:
                 local.command = (packet.sample_step, np.clip(GOAL3.unpack(body), 0., self.bounds))
+                local.last_command_step = packet.sample_step
                 local.last_plan = -100000
         elif kind == Kind.ACK:
             ACK.unpack(body)  # receipt is accounted, no free retransmission/ACK state
@@ -761,8 +850,10 @@ class CH5Runtime:
         row.update(scenario_id=scenario.get("scenario_id"), scenario_seed=scenario.get("scenario_seed"),
             actual_length=self.step, found_step=self.physical.found_step,
             handoff_event_step=self.physical.executor_received_target_step if self.physical.executor_target_assigned else None,
+            capture_contact_steps=int(self.physical.capture_contact_step_count),
             remaining_task_steps=int(self.config["max_steps"]) - self.step,
             channel=self.channel.summary(), communication_protocol="ch5_all_channel_tdma_v1",
+            navigation_controller=self.navigation,
             source_reward_adapter="Phase1CV2TrainingEnv+PRRACTrainingEnv", local_map_count=4,
             task_deadline_steps=int(self.physical.max_steps))
         row["bootstrap_endpoint_deferrals"] = deepcopy(getattr(self.physical.map_module,

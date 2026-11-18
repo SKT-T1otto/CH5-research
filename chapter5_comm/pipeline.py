@@ -180,7 +180,8 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
     from chapter5_comm.runtime import CH5Runtime
     if mode not in {"learned", "fixed", "neural_off"}:
         raise ValueError(mode)
-    runtime = CH5Runtime(base, scene, seed=seed, channel_config=config["channel"])
+    runtime = CH5Runtime(base, scene, seed=seed, channel_config=config["channel"],
+                         navigation=config.get("navigation", "local_waypoints_v1"))
     recorder = TrajectoryRecorder(episode_id, source="real_CH5Runtime_factual_target_v1")
     snapshots, caches, pending, events, transitions, network_trace = {}, {i: [] for i in range(4)}, {}, [], [], []
     gamma, horizon = base["rl"]["gamma"], config["label_horizon"]
@@ -188,7 +189,8 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
     explore = record_labels if explore is None else bool(explore)
     task_explore = explore if task_explore is None else bool(task_explore)
     device = next(networks.decoder.parameters()).device
-    model.reset_noise()
+    if task_explore:
+        model.reset_noise()
 
     def frame():
         truth = runtime.teacher_truth()
@@ -213,9 +215,15 @@ def run_episode(config, base, scene, networks, model, *, seed, mode, episode_id,
                 if snapshot is None:
                     raise RuntimeError("a received neural packet has no factual send record")
                 cache = caches[receiver]
+                oldest = runtime.step - config["neural_cache_steps"]
+                cache[:] = [x for x in cache if x["source_step"] >= oldest]
+                if delivered["source_step"] < oldest:
+                    continue
+                if any(x["sender"] == delivered["sender"] and x["stream_type"] == delivered["stream_type"]
+                       and x["source_step"] > delivered["source_step"] for x in cache):
+                    continue
                 cache[:] = [x for x in cache if not (x["sender"] == delivered["sender"] and x["stream_type"] == delivered["stream_type"])]
                 cache.append(delivered)
-                cache[:] = [x for x in cache if runtime.step - x["source_step"] <= config["neural_cache_steps"]]
                 with torch.no_grad():
                     # Reconstruct exactly the encoder's on-wire int8 quantizer.
                     tokens = delivered_tokens(cache).to(device)
