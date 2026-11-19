@@ -23,7 +23,6 @@ SCHEMA = "ch5.d2.collision_pair.v1"
 PRESET = "configs/chapter5/d2_short_experiment_v1.json"
 ROLLOUT_LIMIT = 25
 FOCUS_AGENT = 1
-SCAN_MAP_FIELDS = (*MAP_FIELDS, "sensor_directions")
 
 
 def _initial_physics(raw):
@@ -32,6 +31,10 @@ def _initial_physics(raw):
                        "flow_gain", "_flow_phase_x", "_flow_phase_y", "dt", "max_steps")),
         target=raw.target_state.to_payload(), obstacles=deepcopy(raw.ground_truth_obstacles),
     )
+
+
+def _map_blob(mapper, blobs):
+    return blobs.put(dict(fields(mapper, MAP_FIELDS), sensor_directions=mapper.sensor_directions))
 
 
 def _local_navigation(runtime, blobs):
@@ -43,7 +46,7 @@ def _local_navigation(runtime, blobs):
             path_index=local.path_index, allocation=local.allocation, allocation_step=local.last_allocation,
             command=local.command, last_plan_step=local.last_plan,
             own_scan=dict(sample_step=sample, origin=origin, distances=distances, hits=hits),
-            received_peers=local.peers, map_blob=blobs.put(fields(local.mapper, SCAN_MAP_FIELDS)),
+            received_peers=local.peers, map_blob=_map_blob(local.mapper, blobs),
         ))
     return agents
 
@@ -54,7 +57,7 @@ def _native_navigation(runtime, raw, blobs):
         allocation=runtime.controller.current_allocation,
         safety_status=runtime.bridge.last_safety_status,
         decision_map_step=runtime.state.step, decision_map_revision=runtime.state.map_revision,
-        live_shared_map_blob=blobs.put(fields(raw.map_module, SCAN_MAP_FIELDS)),
+        live_shared_map_blob=_map_blob(raw.map_module, blobs),
         focus_path_tracker=runtime.bridge.path_tracker.snapshot(FOCUS_AGENT),
     )
 
