@@ -37,4 +37,27 @@ bash scripts/ch5_linux.sh d2-diagnose "$RUN"
 
 本次诊断涉及 `chapter5_comm/d2_diagnostics.py`、`cli.py` 和 `scripts/ch5_linux.sh`。首次交接统计涉及 `chapter5_comm/runtime.py`、`chapter5_comm/experiment_report.py` 和 `checks/test_ch5_d2_controls.py`。
 
+## 30 场提前制动与扫描调度对照
+
+固定的 30 个 M20 测试场景依次跑原版、仅提前制动、仅扫描优先和两者同时启用。每场景使用同一物理种子和初始状态。各组分别用可靠参考和组合通信劣化原配置，总计 240 个评估回合，沿用 400 步任务期限。全部使用 D2 ZERO 和普通报文，训练更新数为零。
+
+提前制动仅使用本艇速度、本艇声呐和本地地图，预测当前制动走廊接近障碍时把原控制器的临时跟踪点设为当前位置。它是待验证的近似判据，每次触发记录步数和来源。扫描优先对调普通循环中的 SCAN 和 STATE 顺序，沿用各艇发送时隙、报文格式、信道和比特计费。报告保留实际发送位数、首次收到扫描的步数以及各组发现、碰撞、超时、成功和逐场配对差分。
+
+```bash
+SCENES="/完整路径/你的30场M20清单.json"
+RUN="outputs/chapter5/d2_batch_$(date +%Y%m%d_%H%M%S)_$$"
+bash scripts/ch5_linux.sh d2-batch --manifest "$SCENES" --root "$RUN" --execute
+```
+
+输入为第三章格式的测试清单或场景 JSON 数组，要求 30 个不同的物理场景和唯一的场景 ID、种子。使用 `--generated` 可单独生成一批 D2 命名空间的场景。加 `--smoke` 只观察第一个场景在八个条件下的前 25 步。恢复时保留同一个 RUN 和清单，给原命令加 `--resume`，程序会核对源代码、配置和场景后跳过已经写完的回合。
+
+完成标记为 `$RUN/report.json` 的 `complete: true` 与 `rows: 240`。归档放在第五章目录下。
+
+```bash
+mkdir -p outputs/chapter5/archives
+tar -czf "outputs/chapter5/archives/${RUN##*/}.tar.gz" -C "$(dirname "$RUN")" "${RUN##*/}"
+```
+
+该批次涉及 `chapter5_comm/d2_batch.py`、`search_braking.py`、`runtime.py`、`cli.py`、`scripts/ch5_linux.sh` 和 `checks/test_ch5_d2_controls.py`。
+
 实现记录包括 `chapter5_comm/d2_navigation.py`、`runtime.py`、`pipeline.py`、`experiment_config.py`、`experiment_runner.py`、`experiment_state.py`、`experiment_report.py`，两份 `d2_*_experiment_v1.json` 配置、`scripts/ch5_linux.sh`、`checks/test_ch5_d2_controls.py`、`.github/workflows/ch5-d2-linux.yml` 及本说明。

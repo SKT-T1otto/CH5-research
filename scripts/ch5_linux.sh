@@ -40,6 +40,10 @@ case "$command" in
     run="${2:?Usage: d2-diagnose RUN}"
     "$PYTHON_BIN" -B cli.py ch5-d2-diagnose --root "$run" --execute
     ;;
+  d2-batch)
+    shift
+    "$PYTHON_BIN" -B cli.py ch5-d2-batch "$@"
+    ;;
   train|evaluate|all)
     run="${2:?Usage: train|evaluate|all RUN [cpu|cuda|auto]}"
     device="${3:-cpu}"
@@ -53,6 +57,7 @@ case "$command" in
     echo 'Usage: bash scripts/ch5_linux.sh check [cpu|cuda|auto]'
     echo '       bash scripts/ch5_linux.sh d2-short outputs/chapter5/RUN [cpu|cuda|auto]'
     echo '       bash scripts/ch5_linux.sh d2-diagnose outputs/chapter5/RUN'
+    echo '       bash scripts/ch5_linux.sh d2-batch --root outputs/chapter5/RUN --manifest SCENES.json --execute'
     echo '       bash scripts/ch5_linux.sh plan [d2_short|pilot|formal]'
     echo '       bash scripts/ch5_linux.sh prepare d2_short|pilot|formal outputs/chapter5/RUN'
     echo '       bash scripts/ch5_linux.sh train|evaluate|all outputs/chapter5/RUN [cpu|cuda|auto]'

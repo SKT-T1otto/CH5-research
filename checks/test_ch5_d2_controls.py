@@ -2,11 +2,14 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import numpy as np
+import torch
 
+from chapter5_comm.d2_batch import _report
 from chapter5_comm.experiment_config import arm_settings, plan_summary, read_experiment
 from chapter5_comm.experiment_runner import build_objects
 from chapter5_comm.pipeline import scenarios
 from chapter5_comm.runtime import CH5Runtime, TargetState
+from chapter5_comm.search_braking import stopping_risk
 
 
 class D2ControlsTest(TestCase):
@@ -58,3 +61,28 @@ class D2ControlsTest(TestCase):
             self.assertEqual(runtime.summary()["handoff_event_step"], 6)
             self.assertEqual(runtime.summary()["last_target_received_step"], 11)
         self.assertEqual(runtime.physical.last_handoff_delay, 4)
+
+    def test_stopping_risk_only_uses_hits_ahead_of_boat(self):
+        mapper = type("Mapper", (), {
+            "planner_obstacle_clearance": .4,
+            "sensor_directions": torch.tensor([[1., 0., 0.], [-1., 0., 0.]]),
+            "segment_is_free": staticmethod(lambda start, end: True),
+        })()
+        pos = np.ones(3)
+        options = dict(dt=.2, sensor_range=4.5, bounds=(20, 20, 8), prior_gain=(1.1, 1.),
+                       prior_strength=1., acceleration_limit=(1., .7))
+        scan = (0, pos, np.array([.5, .5]), np.array([True, False]))
+        self.assertEqual(stopping_risk(pos, np.array([1., 0., 0.]), mapper, scan, **options), "sonar")
+        self.assertIsNone(stopping_risk(pos, np.array([-1., 0., 0.]), mapper, scan, **options))
+
+    def test_factorial_report_excludes_censored_success_from_paired_counts(self):
+        baseline = dict(case=0, condition="fault", arm="baseline", prefix_cutoff=False, collision=True,
+                        search_collision=True, found=False, success=False, timed_out=False,
+                        channel={"sent_bits": 960}, braking_events=[])
+        brake = dict(baseline, arm="brake_only", prefix_cutoff=True, collision=False, search_collision=False,
+                     success=None, timed_out=None)
+        report = _report([baseline, brake], ["fault"], observation_limit=25, expected=8)
+        pair = report["paired"]["fault"]["baseline_vs_brake_only"]
+        self.assertEqual(pair["collision"]["left_only"], 1)
+        self.assertEqual(pair["success"]["observed"], 0)
+        self.assertFalse(report["complete"])

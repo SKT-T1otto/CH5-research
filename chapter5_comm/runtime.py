@@ -25,6 +25,7 @@ from chapter3_bser.protocols.team_environment import PRRACTrainingEnv
 from chapter3_bser.experiments.coupled_search_v1.execution_forecast import nominal_step
 from .d2_navigation import LocalD2Allocator
 from .protocol import Kind, TDMAChannel
+from .search_braking import stopping_risk
 
 
 VEC6 = struct.Struct("<6f")
@@ -186,9 +187,15 @@ class _CommunicatingUAVEnv(UAVEnv):
         truth_finished = self.agent_finished.clone()
         self.agent_finished[:3] = torch.tensor(
             [local.target is not None for local in self._comm_owner.locals[:3]], device=self.device)
+        previous_targets = None
         try:
+            if self._comm_owner.early_brake:
+                previous_targets = self._nav_targets.clone()
+                self._comm_owner._apply_search_braking()
             return super()._apply_agent_dynamics(actions)
         finally:
+            if previous_targets is not None:
+                self._nav_targets.copy_(previous_targets)
             self.agent_finished.copy_(truth_finished)
 
     def _sense_and_update_shared_map(self):
@@ -261,7 +268,7 @@ class CH5Runtime:
     """
     def __init__(self, config, scenario=None, *, seed=1, episode_id=0,
                  channel_config=None, horizon=8, candidate_count=4, map_token_count=32,
-                 navigation="local_waypoints_v1"):
+                 navigation="local_waypoints_v1", early_brake=False, scan_first=False):
         validate_task_config(config)
         self.config, self.scenario = deepcopy(config), deepcopy(scenario)
         self.seed, self.episode_id = int(seed), int(episode_id)
@@ -271,6 +278,9 @@ class CH5Runtime:
             raise ValueError("unknown Chapter 5 navigation")
         self.navigation = navigation
         self.d2_allocator = LocalD2Allocator() if navigation == "causal_d2_v1" else None
+        self.early_brake, self.scan_first = bool(early_brake), bool(scan_first)
+        if (self.early_brake or self.scan_first) and self.d2_allocator is None:
+            raise ValueError("the search ablations require causal D2 navigation")
         if min(self.horizon, self.candidate_count, self.map_token_count) <= 0:
             raise ValueError("positive feature dimensions required")
         self._ready = False
@@ -318,6 +328,7 @@ class CH5Runtime:
         self._bootstrap_turn = np.zeros(4, dtype=int)
         self._receiver_turn = {(i, kind): 0 for i in range(4) for kind in Kind}
         self._learned_sent_step = -1
+        self.braking_events = []
         self.local_reached = np.zeros(4, int)
         self.local_assigned = np.ones(4, int)
         self.observations = _observations(self.env.reset(scenario=self.scenario,
@@ -526,6 +537,22 @@ class CH5Runtime:
                      (self.physical.max_steps - self.step) / self.physical.max_steps,
                      float(agent == 3)].astype(np.float32)
 
+    def _apply_search_braking(self):
+        env = self.physical
+        for i, local in enumerate(self.locals[:3]):
+            if local.target is not None:
+                continue
+            spec = env.agent_specs[i]
+            risk = stopping_risk(
+                _np(env._agent_pos[i]), _np(env._agent_vel[i]), local.mapper, local.scan,
+                dt=self.dt, sensor_range=env.obstacle_sensor_range, bounds=self.bounds,
+                prior_gain=(env.prior_kv_xy, env.prior_kv_z), prior_strength=env.prior_strength_search,
+                acceleration_limit=(spec["a_xy_max"], spec["a_z_max"]),
+            )
+            if risk is not None:
+                env._nav_targets[i].copy_(env._agent_pos[i])
+                self.braking_events.append(dict(step=self.step, agent=i, reason=risk))
+
     def _send(self, kind, sender, receiver, payload, sample_step):
         # True distance is used by channel physics only, never by policy features.
         distance = float(torch.norm(self.physical._agent_pos[sender] - self.physical._agent_pos[receiver]))
@@ -536,6 +563,8 @@ class CH5Runtime:
         sender = self.tdma_sender
         local = self.locals[sender]
         kinds = [Kind.STATE, Kind.SCAN, Kind.QUERY, Kind.TARGET, Kind.COMMAND, Kind.ACK]
+        if self.scan_first:
+            kinds[0], kinds[1] = kinds[1], kinds[0]
         for offset in range(len(kinds)):
             index = (int(self._bootstrap_turn[sender]) + offset) % len(kinds)
             kind = kinds[index]
