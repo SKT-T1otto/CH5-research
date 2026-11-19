@@ -21,4 +21,20 @@ bash scripts/ch5_linux.sh d2-short "$RUN" cpu
 
 GitHub Actions 提供 Ubuntu CPU 运行及结果下载，实验文件按运行 ID 隔离，上传日志与结果表。
 
+## 搜索阶段碰撞诊断
+
+使用 D2-short 的第一个固定测试场景和同一物理种子。原生第三章 D2 ZERO 使用共享地图和原控制链。第五章 D2 ZERO 使用各艇局部地图和原高可靠 TDMA 条件。两组在普通 M20 任务中最多各观察前 25 个物理步。任务期限为 400 步，报告将观察窗口截止与任务结束分开记录。
+
+```bash
+RUN="outputs/chapter5/d2_diagnose_$(date +%Y%m%d_%H%M%S)_$$"
+bash scripts/ch5_linux.sh d2-diagnose "$RUN"
+```
+
+- `plan.json`、`scenario.json` 和两组的 `initial_physics.json` 核对同一场景、种子、初始位置、流场和障碍。
+- `result.json` 汇总碰撞艇、障碍、首次导航点分歧和首次实际加速度分歧。
+- 每组的 `steps.jsonl` 保存积分前导航点、路径、零残差输入、实际加速度和碰撞。原生组另存窗口内实际输入共享地图的扫描。第五章组记录各艇自己的最近一次扫描及 `channel_events.json`。`maps/` 按内容哈希保存逐步可见地图快照。
+- 新运行的 `handoff_event_step` 表示首次收到目标报文的步数，`last_target_received_step` 表示最近一次接收。此前已保存的原始结果使用各自记录时的字段定义。
+
+本次诊断涉及 `chapter5_comm/d2_diagnostics.py`、`cli.py` 和 `scripts/ch5_linux.sh`。首次交接统计涉及 `chapter5_comm/runtime.py`、`chapter5_comm/experiment_report.py` 和 `checks/test_ch5_d2_controls.py`。
+
 实现记录包括 `chapter5_comm/d2_navigation.py`、`runtime.py`、`pipeline.py`、`experiment_config.py`、`experiment_runner.py`、`experiment_state.py`、`experiment_report.py`，两份 `d2_*_experiment_v1.json` 配置、`scripts/ch5_linux.sh`、`checks/test_ch5_d2_controls.py`、`.github/workflows/ch5-d2-linux.yml` 及本说明。

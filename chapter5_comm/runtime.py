@@ -849,7 +849,8 @@ class CH5Runtime:
         scenario = self.scenario or {}
         row.update(scenario_id=scenario.get("scenario_id"), scenario_seed=scenario.get("scenario_seed"),
             actual_length=self.step, found_step=self.physical.found_step,
-            handoff_event_step=self.physical.executor_received_target_step if self.physical.executor_target_assigned else None,
+            handoff_event_step=self.physical.handoff_payload_delivery_step,
+            last_target_received_step=self.physical.executor_received_target_step if self.physical.executor_target_assigned else None,
             capture_contact_steps=int(self.physical.capture_contact_step_count),
             remaining_task_steps=int(self.config["max_steps"]) - self.step,
             channel=self.channel.summary(), communication_protocol="ch5_all_channel_tdma_v1",

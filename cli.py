@@ -7,6 +7,7 @@ import sys
 COMMANDS = {
     'ch5': 'chapter5_comm.workflow',
     'ch5-experiment': 'chapter5_comm.experiment_workflow',
+    'ch5-d2-diagnose': 'chapter5_comm.d2_diagnostics',
     'train': 'chapter3_bser.learning.train',
     'evaluate': 'chapter3_bser.learning.evaluate',
     'ordering': 'chapter3_bser.learning.evaluate',

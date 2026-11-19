@@ -45,3 +45,16 @@ class D2ControlsTest(TestCase):
                 self.assertEqual(geo.call_args.kwargs["role"], "executor")
                 runtime._d2_goal(3, runtime.physical._agent_pos[3])
                 self.assertEqual(solver.call_count, 1)
+
+    def test_handoff_summary_keeps_first_and_last_receive_steps_separate(self):
+        runtime = CH5Runtime(self.base, scenarios(1, 699)[0])
+        self.addCleanup(runtime.close)
+        runtime.physical.found_step = 2
+        for sent, received in [(2, 6), (8, 11)]:
+            state = TargetState(np.array([10., 11., 3.]), np.array([.1, 0., 0.]), sent,
+                                runtime.physical.target_motion_mode)
+            runtime._accept_target(3, state, delivery_step=received)
+        with patch.object(runtime.env, "finalize_episode", return_value={}):
+            self.assertEqual(runtime.summary()["handoff_event_step"], 6)
+            self.assertEqual(runtime.summary()["last_target_received_step"], 11)
+        self.assertEqual(runtime.physical.last_handoff_delay, 4)
