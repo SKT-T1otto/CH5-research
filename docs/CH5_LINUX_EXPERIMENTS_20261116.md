@@ -144,3 +144,21 @@ RUN/reports/                       每次独立生成的CSV、JSON和Markdown
 默认正式运行只保存逐episode摘要，采集另存原始轨迹/标签；避免保存所有400步网络张量造成过大输出。`save_episode_details=true`可在建立新计划前开启。结果按独立训练种子的均值聚合，给出回报、任务成功率、经验低尾回报、实际比特和墙钟时间；区间以训练种子bootstrap计算，小样本区间只作探索性证据，不将多episode冒充多训练种子。
 
 缺失seed/组/工况明确列出，报告`complete=false`；完成不等于性能优越性，程序不会自动宣称论文创新或收敛通过。
+
+## 8. D2 可靠通信碰撞回放（R123 扩场 0003、0009）
+
+该入口读取第三章已解压的 `r123_expansion_20261120_123244_3078331` 和第五章已解压的 `d2_batch_r123_20261121_140145_3923224`。脚本按目录名查找，再校验计划、场景、逐回合数据及完成回执的 SHA-256。也可用 `--ch3-run`、`--batch-run` 直接传入两个已有运行目录。
+
+```bash
+conda activate AUV
+cd "$HOME/AUV-Thesis/CH5-research"
+RUN="outputs/chapter5/d2_collision_cases_$(date +%Y%m%d_%H%M%S)_$$"
+echo "$RUN"
+bash scripts/ch5_linux.sh d2-collision-cases --search-root "$HOME/AUV-Thesis" --root "$RUN" --execute
+```
+
+第三章部分从归档读取真实轨迹，按当时四艇的位置与传感器模型逐步重建共享占据地图，用日志中的每步地图版本和路径顶点哈希核对重建结果。只要第三章 tracking_both 和 task_sync 两条日志在窗口内的轨迹或决策记录不一致，本次双场景共同参照就会报错。
+
+第五章每场重放两次，一次沿用历史批次种子，一次使用第三章评估种子。物理步最多为 2 × (66 + 37) = 206，训练更新为 0。采样时刻为应用物理动作前，逐步文件记录真实跟踪点、剩余路径、局部栅格、队友扫描时间、实际运动与碰撞记录。另在相同第五章轨迹上读取环境的全队共享地图供离线比较。图中的真实障碍轮廓和历史撞点只用于分析。
+
+完成时核对 `report.json` 中的 `complete` 和 `verified`。各场的 `comparison.png` 使用统一尺度显示水平和垂直投影。`comparison.json` 记录首次分歧、最后一次动作及历史重现检查，`occupancy.npz` 保存全部时刻的三维占据概率，`grid.json` 保存坐标与阈值，三份 JSONL 保存按动作索引排列的原始比较记录。动作从 0 开始编号，动作 65 完成后是物理第 66 步。
