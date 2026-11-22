@@ -22,6 +22,7 @@ class Kind(IntEnum):
     MAP_LATENT = 7
     DYNAMIC_LATENT = 8
     TARGET_LATENT = 9
+    MAP_EVIDENCE = 10
 
 
 HEADER = struct.Struct("<BBBBIHHI")

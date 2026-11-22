@@ -26,6 +26,7 @@ from chapter3_bser.experiments.coupled_search_v1.execution_forecast import nomin
 from .d2_navigation import LocalD2Allocator
 from .protocol import Kind, TDMAChannel
 from .search_braking import stopping_risk
+from . import history_evidence
 
 
 VEC6 = struct.Struct("<6f")
@@ -268,12 +269,16 @@ class CH5Runtime:
     """
     def __init__(self, config, scenario=None, *, seed=1, episode_id=0,
                  channel_config=None, horizon=8, candidate_count=4, map_token_count=32,
-                 navigation="local_waypoints_v1", early_brake=False, scan_first=False):
+                 navigation="local_waypoints_v1", early_brake=False, scan_first=False,
+                 map_transport="raw_scan"):
         validate_task_config(config)
         self.config, self.scenario = deepcopy(config), deepcopy(scenario)
         self.seed, self.episode_id = int(seed), int(episode_id)
         self.horizon, self.candidate_count = int(horizon), int(candidate_count)
         self.map_token_count = int(map_token_count)
+        if map_transport not in ('raw_scan', 'own_history_v1'):
+            raise ValueError('unknown map transport')
+        self.map_transport = map_transport
         if navigation not in ("local_waypoints_v1", "causal_d2_v1"):
             raise ValueError("unknown Chapter 5 navigation")
         self.navigation = navigation
@@ -329,6 +334,8 @@ class CH5Runtime:
         self._receiver_turn = {(i, kind): 0 for i in range(4) for kind in Kind}
         self._learned_sent_step = -1
         self.braking_events = []
+        self.evidence_events = []
+        self._evidence_sent = {}
         self.local_reached = np.zeros(4, int)
         self.local_assigned = np.ones(4, int)
         self.observations = _observations(self.env.reset(scenario=self.scenario,
@@ -342,6 +349,11 @@ class CH5Runtime:
             mapper = env._build_obstacle_planner()
             mapper.reset(None, [])
             self.locals.append(_LocalAgent(mapper, _np(env._agent_pos[agent])))
+            if self.map_transport == 'own_history_v1':
+                own = env._build_obstacle_planner()
+                own.reset(None, [])
+                self.locals[-1].own_evidence = own
+                self.locals[-1].remote_evidence = {}
         self._ready = True
         self._sense_local()
         self._update_navigation(force=True)
@@ -363,6 +375,10 @@ class CH5Runtime:
             distances = np.array([r[0] for r in readings], float)
             hits = np.array([r[1] for r in readings], bool)
             mapper.integrate_obstacle_scan(position[None], directions, distances[None], hits[None], current_step=self.step)
+            if self.map_transport == 'own_history_v1':
+                local.own_evidence.integrate_obstacle_scan(position[None], directions,
+                    distances[None], hits[None], current_step=self.step)
+                history_evidence.fuse(local)
             mapper.predict_belief_motion()
             if i < 3 and local.target is None:
                 mapper.update_belief_negative(env._agent_pos[i:i + 1], env._sensor_range[i:i + 1])
@@ -607,7 +623,18 @@ class CH5Runtime:
             else:
                 receiver, packet_id = local.acks[0]
                 payload = ACK.pack(packet_id)
-            result = self._send(kind, sender, receiver, payload, sample)
+            wire_kind = kind
+            entries = None
+            if kind == Kind.SCAN and self.map_transport == 'own_history_v1':
+                payload, entries = history_evidence.encode(local.own_evidence,
+                    self._evidence_sent.get((sender, receiver), {}).items())
+                wire_kind = Kind.MAP_EVIDENCE
+            result = self._send(wire_kind, sender, receiver, payload, sample)
+            if entries is not None and result['accepted']:
+                known = self._evidence_sent.setdefault((sender, receiver), {})
+                known.update({i: q for i, t, q, n in entries})
+                self.evidence_events.append(dict(event='send', step=self.step, sender=sender,
+                    receiver=receiver, packet_id=result['packet_id'], cells=entries, bits=result['bits']))
             self._bootstrap_turn[sender] = (index + 1) % len(kinds)
             if result["accepted"]:
                 self._receiver_turn[sender, kind] += 1
@@ -629,6 +656,16 @@ class CH5Runtime:
                 state = TargetState(values[:3], values[3:], packet.sample_step,
                                     self.physical.target_motion_mode)
                 self._accept_target(packet.receiver, state, delivery_step=due)
+        elif kind == Kind.MAP_EVIDENCE:
+            entries = history_evidence.decode(body, local.mapper.occupancy_logodds.numel(), packet.sample_step)
+            source = local.remote_evidence.setdefault(packet.sender, {})
+            for i, t, q, n in entries:
+                if i not in source or t > source[i][0]:
+                    source[i] = (t, q, n)
+            history_evidence.fuse(local)
+            self.evidence_events.append(dict(event='receive', step=self.step, due=due,
+                sender=packet.sender, receiver=packet.receiver, packet_id=packet.sequence,
+                cells=entries, bits=packet.bits))
         elif kind == Kind.SCAN:
             key = (packet.sender, packet.sample_step)
             if key not in local.scan_seen:
