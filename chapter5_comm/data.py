@@ -355,3 +355,60 @@ def write_labels(path, examples):
                 raise ValueError("unsupported teacher label schema")
             stream.write(json.dumps(_plain(example), ensure_ascii=False, allow_nan=False) + "\n")
     return destination
+
+
+COMMAND_TRIPLET_SCHEMA = "ch5_native_command_choice_triplet_v1"
+COMMAND_ARMS = ("CMD", "PAD", "REPLAN_ONLY")
+
+
+def command_triplet_record(opportunity, sender_features, arms, route_encounter_labels, diagnostics_ref):
+    """Bind a legal pre-send example to three observed closed-loop suffixes and separate teacher labels."""
+    from .protocol import COMMAND_PADDING, Kind, Packet
+    from .runtime import GOAL3
+
+    kinds = dict(zip(COMMAND_ARMS, (Kind.COMMAND, Kind.COMMAND_PAD, Kind.REPLAN_ONLY)))
+    if set(arms) != set(kinds) or set(route_encounter_labels) != set(kinds):
+        raise ValueError("a triplet requires all three named arms and their separate geometric labels")
+    legal = {"sender", "receiver", "send_step", "sample_step", "candidate_goal", "previous_command",
+             "available_bits", "query_sample_step", "peer_sample_step", "tokens"}
+    token_fields = {"map_tokens", "map_mask", "dynamic_tokens", "dynamic_mask", "receiver_query", "query_available"}
+    if set(sender_features) != legal or set(sender_features["tokens"]) != token_fields:
+        raise ValueError("sender inputs must match the pre-send feature allowlist")
+    inputs = _legal_feature_container(sender_features)
+    src, dst, t = (inputs[k] for k in ("sender", "receiver", "send_step"))
+    if (opportunity["receiver"], opportunity["send_step"]) != (dst, t):
+        raise ValueError("sender features refer to a different native opportunity")
+    prev = inputs["previous_command"]
+    if (src != 0 or dst not in (1, 2) or set(prev) != {"goal", "sample_step", "send_step"}
+            or not 0 <= prev["sample_step"] <= prev["send_step"] < t or not 0 <= inputs["sample_step"] <= t):
+        raise ValueError("invalid sender chronology or D2 peer")
+    if any(s is not None and not 0 <= s <= t for s in (inputs["query_sample_step"], inputs["peer_sample_step"])):
+        raise ValueError("sender evidence cannot come from the future")
+    body = GOAL3.pack(*_vector3(inputs["candidate_goal"], "candidate_goal"))
+    if body == GOAL3.pack(*_vector3(prev["goal"], "previous_goal")):
+        raise ValueError("expected a changed native endpoint")
+    if not diagnostics_ref or len(opportunity["prefix_sha256"]) != 64:
+        raise ValueError("missing diagnostic provenance")
+    due_steps = set()
+    for name, kind in kinds.items():
+        arm = arms[name]
+        packet = Packet.from_bytes(bytes.fromhex(arm["sent_hex"]))
+        expected = Packet(kind, src, dst, opportunity["packet_id"], inputs["sample_step"], t,
+                          body if name == "CMD" else COMMAND_PADDING)
+        if packet != expected or packet.bits != 224 or arm["prefix_sha256"] != opportunity["prefix_sha256"]:
+            raise ValueError("mismatched cut or actual command frame")
+        end = arm["outcome"]
+        if sum(int(end[k]) for k in ("success", "collision", "timeout")) != 1 or end["terminal_step"] <= t:
+            raise ValueError("one original terminal outcome is required")
+        due_steps.add(arm["scheduled_delivery"])
+        arrival, execution = arm["arrival"], arm["next_executed"]
+        if arrival is None:
+            if execution is not None or arm["received_hex"] is not None or route_encounter_labels[name] is not None:
+                raise ValueError("an undelivered command has no receipt or arrival label")
+        elif (arm["received_hex"] != arm["sent_hex"] or not t < arrival < end["terminal_step"]
+              or execution is None or execution["action_step"] != arrival or route_encounter_labels[name] is None):
+            raise ValueError("received bytes and first executed waypoint must align to actual delivery")
+    if len(due_steps) != 1 or len({a["arrival"] for a in arms.values()}) != 1:
+        raise ValueError("intervention delivery differs before any treatment could act")
+    return _plain(dict(schema=COMMAND_TRIPLET_SCHEMA, opportunity=opportunity, sender_features=inputs,
+                       arms=arms, route_encounter_labels=route_encounter_labels, offline_diagnostics_ref=diagnostics_ref))
