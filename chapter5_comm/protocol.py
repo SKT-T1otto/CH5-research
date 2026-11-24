@@ -23,6 +23,26 @@ class Kind(IntEnum):
     DYNAMIC_LATENT = 8
     TARGET_LATENT = 9
     MAP_EVIDENCE = 10
+    COMMAND_PAD = 11
+    REPLAN_ONLY = 12
+
+
+COMMAND_CONTROLS = (Kind.COMMAND_PAD, Kind.REPLAN_ONLY)
+COMMAND_PADDING = bytes(12)  # Same payload size as three native float32 coordinates.
+
+
+@dataclass(frozen=True)
+class D2CommandOverride:
+    """Replace an eligible commander transmission in just one TDMA slot."""
+    step: int
+    receiver: int
+    kind: Kind
+
+    def __post_init__(self):
+        if self.kind not in COMMAND_CONTROLS or self.receiver not in (1, 2):
+            raise ValueError("expected a D2 searcher and command control kind")
+        if not 0 <= self.step < 2**16 or self.step % 4 != 0:
+            raise ValueError("expected a commander TDMA slot")
 
 
 HEADER = struct.Struct("<BBBBIHHI")

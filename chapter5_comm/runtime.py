@@ -24,7 +24,7 @@ from chapter3_bser.rewards.training_env import Phase1CV2TrainingEnv
 from chapter3_bser.protocols.team_environment import PRRACTrainingEnv
 from chapter3_bser.experiments.coupled_search_v1.execution_forecast import nominal_step
 from .d2_navigation import LocalD2Allocator
-from .protocol import Kind, TDMAChannel
+from .protocol import COMMAND_CONTROLS, COMMAND_PADDING, D2CommandOverride, Kind, TDMAChannel
 from .search_braking import stopping_risk
 from . import history_evidence
 
@@ -270,7 +270,7 @@ class CH5Runtime:
     def __init__(self, config, scenario=None, *, seed=1, episode_id=0,
                  channel_config=None, horizon=8, candidate_count=4, map_token_count=32,
                  navigation="local_waypoints_v1", early_brake=False, scan_first=False,
-                 map_transport="raw_scan"):
+                 map_transport="raw_scan", command_override=None):
         validate_task_config(config)
         self.config, self.scenario = deepcopy(config), deepcopy(scenario)
         self.seed, self.episode_id = int(seed), int(episode_id)
@@ -283,6 +283,10 @@ class CH5Runtime:
             raise ValueError("unknown Chapter 5 navigation")
         self.navigation = navigation
         self.d2_allocator = LocalD2Allocator() if navigation == "causal_d2_v1" else None
+        if command_override is not None and (
+                self.d2_allocator is None or not isinstance(command_override, D2CommandOverride)):
+            raise ValueError("a command override requires causal D2 and a D2CommandOverride")
+        self.command_override = command_override
         self.early_brake, self.scan_first = bool(early_brake), bool(scan_first)
         if (self.early_brake or self.scan_first) and self.d2_allocator is None:
             raise ValueError("the search ablations require causal D2 navigation")
@@ -331,7 +335,9 @@ class CH5Runtime:
         self._neural_deliveries = []
         self._metadata = {}
         self._bootstrap_turn = np.zeros(4, dtype=int)
-        self._receiver_turn = {(i, kind): 0 for i in range(4) for kind in Kind}
+        # Control frames ride the COMMAND cursor. They do not acquire scheduling turns.
+        self._receiver_turn = {(i, kind): 0 for i in range(4) for kind in Kind if kind not in COMMAND_CONTROLS}
+        self._last_replan_request = {}
         self._learned_sent_step = -1
         self.braking_events = []
         self.evidence_events = []
@@ -625,6 +631,10 @@ class CH5Runtime:
                 payload = ACK.pack(packet_id)
             wire_kind = kind
             entries = None
+            override = self.command_override
+            if (kind == Kind.COMMAND and override is not None and
+                    (self.step, receiver) == (override.step, override.receiver)):
+                wire_kind, payload = override.kind, COMMAND_PADDING
             if kind == Kind.SCAN and self.map_transport == 'own_history_v1':
                 payload, entries = history_evidence.encode(local.own_evidence,
                     self._evidence_sent.get((sender, receiver), {}).items())
@@ -687,6 +697,14 @@ class CH5Runtime:
             if packet.sender == 0 and packet.sample_step > local.last_command_step:
                 local.command = (packet.sample_step, np.clip(GOAL3.unpack(body), 0., self.bounds))
                 local.last_command_step = packet.sample_step
+                local.last_plan = -100000
+        elif kind in COMMAND_CONTROLS:
+            if self.d2_allocator is None or packet.sender != 0 or packet.receiver not in (1, 2) or body != COMMAND_PADDING:
+                return
+            if kind == Kind.REPLAN_ONLY and packet.sample_step > max(
+                    local.last_command_step, self._last_replan_request.get(packet.receiver, -1)):
+                # Only the planner is invalidated. A later real command has its own watermark.
+                self._last_replan_request[packet.receiver] = packet.sample_step
                 local.last_plan = -100000
         elif kind == Kind.ACK:
             ACK.unpack(body)  # receipt is accounted, no free retransmission/ACK state

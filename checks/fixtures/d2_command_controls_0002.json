@@ -1,0 +1,194 @@
+{
+  "schema": 1,
+  "scene": {
+    "scenario_id": "r123_expand_20261119_0002",
+    "pair_group_id": "unknown_validation_pair_0003",
+    "scenario_profile": "M20_MOVING_UNKNOWN_MULTI",
+    "scenario_role": "eval",
+    "scenario_split": "eval",
+    "protocol": "ch3_unknown_map_v1",
+    "scenario_seed": 2026111903,
+    "planner_seed": 914662383,
+    "max_steps": 400,
+    "target_motion_known": true,
+    "target_motion_mode": "constant_velocity_reflect_v1",
+    "target_state_schema": "moving_target_state_v1",
+    "target_motion_seed": 20261119012,
+    "initial_agent_positions": [
+      [
+        3.6521442,
+        14.7551662,
+        6.2120729
+      ],
+      [
+        17.9143141,
+        15.4999797,
+        3.5999457
+      ],
+      [
+        9.1619953,
+        9.4951921,
+        0.8232802
+      ],
+      [
+        7.1702781,
+        6.2639291,
+        1.4387841
+      ]
+    ],
+    "initial_executor_wait_point": [
+      7.94144,
+      3.1425842,
+      2.196615
+    ],
+    "target_position": [
+      10.8074117,
+      15.7030573,
+      3.5229711
+    ],
+    "target_initial_position": [
+      10.8074117,
+      15.7030573,
+      3.5229711
+    ],
+    "target_initial_velocity": [
+      0.2105326,
+      0.0750169,
+      -0.2952553
+    ],
+    "use_obstacles": true,
+    "obstacle_layout_id": "custom_aabb_v1",
+    "obstacle_family": "random_multi_aabb_v1",
+    "obstacle_knowledge_mode": "online_unknown",
+    "obstacle_layout_sha256": "0ee8850570444385ae1cfb46e6fc321bf2d61ebfaa7f5abb48f9c2702c968105",
+    "obstacle_count": 4,
+    "obstacles": [
+      {
+        "center": [
+          12.2930336,
+          2.4862022,
+          4.5112437
+        ],
+        "size": [
+          3.2755483,
+          1.8534905,
+          4.5873448
+        ]
+      },
+      {
+        "center": [
+          10.6065908,
+          12.4573565,
+          5.9513139
+        ],
+        "size": [
+          2.3938529,
+          2.5003343,
+          2.4310055
+        ]
+      },
+      {
+        "center": [
+          7.5231404,
+          15.2919383,
+          4.0593312
+        ],
+        "size": [
+          1.6013212,
+          4.8905299,
+          2.9364125
+        ]
+      },
+      {
+        "center": [
+          3.5701323,
+          4.9963699,
+          3.1473895
+        ],
+        "size": [
+          3.6183542,
+          4.1099771,
+          4.0968267
+        ]
+      }
+    ],
+    "planner_grid_size": [
+      10,
+      10,
+      8
+    ],
+    "planner_obstacle_clearance": 0.4,
+    "target_obstacle_clearance": 0.2,
+    "target_capture_radius": 0.8,
+    "target_trajectory_sha256": "0f186ff9a08421cb714779d603da2d5b80c2cf57c2d70b72baf8056850e5323d",
+    "target_trajectory_distance": 29.546837978958813,
+    "unknown_map_schema": "shared_logodds_occupancy_v1",
+    "map_sharing_mode": "central_shared_deterministic_v1",
+    "flow_phase_x": 0.0,
+    "flow_phase_y": 0.0,
+    "scenario_schema_version": 1,
+    "connectivity_component_id": "3e8be8d231a3a95f",
+    "target_trajectory_reachable": true,
+    "target_trajectory_exact_endpoint_reachable": true,
+    "target_trajectory_max_connector_distance": 1.3288870309462644,
+    "target_trajectory_connector_failure_count": 0
+  },
+  "seed": 2026111903,
+  "channel": {
+    "capacity_bits": 65536,
+    "refill_bits": 16384,
+    "loss_probability": 0,
+    "delay_steps": 0,
+    "jitter_steps": 0,
+    "rate_bps": 1000000,
+    "sound_speed": 1500,
+    "burst_start_probability": 0,
+    "burst_length": 4,
+    "burst_loss_probability": 0.8
+  },
+  "source_commit": "0a2de8bc965293d47c7f6dad29f1c520bdbe56a6",
+  "base_sha256": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48",
+  "plan_sha256": "c23d522ae46e8233576b95c0c3525e8ffdf414653da3c27759805e4c3c1aa32d",
+  "case_files": {
+    "channel.json": "4fa380d5a94c68d1c7be3f82192f50040a405bf7c646cd80df9c74615f5a6027",
+    "evidence.json": "960b6491f4c68f96c6a7eab567e7e962adf4a39f97c227c565ed55e0bf05f96a",
+    "occupancy.npz": "bf3a7bcd2e5c490a4b4222e7f9ecbdd6e3fb6012273a39071fd27b610193e906",
+    "replans.json": "6313e4b9876dfa6aca020f8897372bad5c74123a6261a0a95c56cd7f0a80f049",
+    "summary.json": "e01fce0099a4acf8c87126f6fd6d52a76abcc788e21b05ab7316ed6636f9ab29",
+    "trajectory.json": "a4151571e2eddf3d717a607782f9cb7b6ae2c848f525ecc31d03175eca5e464b"
+  },
+  "aa_files": {
+    "common.json": "b59bd1fad5cd8a37b6bc81b4dd7405f8f365a6e94dfabc5442efab0d4f245f88",
+    "A.json": "65d91aa855068c5f939255a4ba90d02d2ca31e1236c259a5770994c97a5545fd",
+    "validation.json": "74ed71c33546cdb4aa01054d5ddcf7fe7a66ccba36259cb687df301c1d2ac0a3"
+  },
+  "pre_send_fingerprint": "c71fa5d93089b307d81f2cfe0c2f0a54561de93d37704591d5bbdc2f63c3ff7c",
+  "prefix": {
+    "events": 470,
+    "sha256": "7b8c3b9aa89668a3a12ee87b784157b74e95e9a34e6abc8ba9652e8836bb77e2",
+    "by_event": {
+      "astar": "3f315c22549dd9bff4b7529554f193d212fdef5e37d4a326d9b4ed079b749504",
+      "control": "723d12e04ccf9ca0fe2216c66cdba619b14da8ab9bbca9f022868aebe4ff04a2",
+      "rx": "17eed8e61fde887356efb5a868becdc26fedc80ad51be16c7e01ecab8d46e040",
+      "trajectory": "51217bcad802808213f981eebc71e4f3b5d85df24cf222879a684f574497bff7",
+      "transition": "64c1e668b55bbb34ecf9b82d5ddfc22bfe535cdd1aa4843ed99ca316b372b8a4",
+      "tx": "33a27c0c91e4d6bc93728866a536217741a31e896aa1ba056e1ff1e3a7b9fb81"
+    }
+  },
+  "cmd_suffix": {
+    "events": 36,
+    "sha256": "bec6c7792a33f0d078f16df615a59b014a0ff769e54f801f4765beae18a7b7d4",
+    "by_event": {
+      "astar": "98aa06b6da3853552e79f7394e1c92045735c7e12321f8e4794e1f280598e886",
+      "control": "e1184efc8e81417d2e66545f0fc739af21f546b1e0f2ea4375f20db8819ac397",
+      "local_maps": "f959e0fb14c8fa6d93ba975c10fa599587bc40bc64ed2dea6d1b4c1410e78e04",
+      "rx": "ce0974ba358808ebdb2e404b8fad5fba67554eb597cb337276debe6d1a5411cb",
+      "trajectory": "ac9a44cdd01ad03d79e51317679f751f524a2cd547c1c6e5236327e56fe6c846",
+      "transition": "2d7fc04f604406a312816f3105630d5756a8ddc5a214353940b9f49e47e0fab2",
+      "tx": "87f32701221fb43c40df9fb217ec5b017ffdd7fd632aa15c5c21a9f5086b984b"
+    }
+  },
+  "cmd_summary": "836e9cf20d7eb552eac2b5f91591b420a7adce60b671e6e7055e340a58fdb90d",
+  "cmd_channel": "69b611d81d6f0265ed36a58979103efb5a7ac00b40bb6a77d41a68aa9eed4efc",
+  "cmd_evidence": "b00b0081b8adeb24382d952546e2107eccd2aba2bd5cc4ed7e2541a46666044f"
+}

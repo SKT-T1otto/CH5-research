@@ -1,0 +1,1675 @@
+{
+  "schema": 1,
+  "passed": true,
+  "scene": "r123_expand_20261119_0002",
+  "seed": 2026111903,
+  "system": "Windows-10-10.0.26200-SP0",
+  "python": "3.10.20",
+  "torch": "2.11.0+cu126",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "torch_threads": 1,
+  "training_updates": 0,
+  "policy": "ZeroResidualPolicy",
+  "navigation": "causal_d2_v1",
+  "map_transport": "own_history_v1",
+  "deadline": 400,
+  "channel_config": {
+    "capacity_bits": 65536,
+    "refill_bits": 16384,
+    "loss_probability": 0,
+    "delay_steps": 0,
+    "jitter_steps": 0,
+    "rate_bps": 1000000,
+    "sound_speed": 1500,
+    "burst_start_probability": 0,
+    "burst_length": 4,
+    "burst_loss_probability": 0.8
+  },
+  "fixture_sha256": "5cba404a54cdaeaca2557f800cc802cd0f4f0950cde6f7913546e4d18c20b79f",
+  "shared_prefixes": 1,
+  "independently_forked_arms": 3,
+  "native_cut_sha256": "c71fa5d93089b307d81f2cfe0c2f0a54561de93d37704591d5bbdc2f63c3ff7c",
+  "native_regression": {
+    "prefix": {
+      "events": 470,
+      "sha256": "7b8c3b9aa89668a3a12ee87b784157b74e95e9a34e6abc8ba9652e8836bb77e2",
+      "by_event": {
+        "astar": "3f315c22549dd9bff4b7529554f193d212fdef5e37d4a326d9b4ed079b749504",
+        "control": "723d12e04ccf9ca0fe2216c66cdba619b14da8ab9bbca9f022868aebe4ff04a2",
+        "rx": "17eed8e61fde887356efb5a868becdc26fedc80ad51be16c7e01ecab8d46e040",
+        "trajectory": "51217bcad802808213f981eebc71e4f3b5d85df24cf222879a684f574497bff7",
+        "transition": "64c1e668b55bbb34ecf9b82d5ddfc22bfe535cdd1aa4843ed99ca316b372b8a4",
+        "tx": "33a27c0c91e4d6bc93728866a536217741a31e896aa1ba056e1ff1e3a7b9fb81"
+      }
+    },
+    "suffix": {
+      "events": 36,
+      "sha256": "bec6c7792a33f0d078f16df615a59b014a0ff769e54f801f4765beae18a7b7d4",
+      "by_event": {
+        "astar": "98aa06b6da3853552e79f7394e1c92045735c7e12321f8e4794e1f280598e886",
+        "control": "e1184efc8e81417d2e66545f0fc739af21f546b1e0f2ea4375f20db8819ac397",
+        "local_maps": "f959e0fb14c8fa6d93ba975c10fa599587bc40bc64ed2dea6d1b4c1410e78e04",
+        "rx": "ce0974ba358808ebdb2e404b8fad5fba67554eb597cb337276debe6d1a5411cb",
+        "trajectory": "ac9a44cdd01ad03d79e51317679f751f524a2cd547c1c6e5236327e56fe6c846",
+        "transition": "2d7fc04f604406a312816f3105630d5756a8ddc5a214353940b9f49e47e0fab2",
+        "tx": "87f32701221fb43c40df9fb217ec5b017ffdd7fd632aa15c5c21a9f5086b984b"
+      }
+    },
+    "summary": true,
+    "channel": true,
+    "evidence": true
+  },
+  "first_difference_by_action_step": {
+    "PAD_vs_REPLAN_ONLY": {
+      "receiver_goal": null,
+      "receiver_route": null,
+      "receiver_waypoint": null,
+      "four_applied_residuals": null,
+      "four_prior_accelerations": null,
+      "four_applied_accelerations": null,
+      "four_next_positions": null,
+      "four_next_velocities": null,
+      "four_rewards": null,
+      "complete_control": null,
+      "complete_navigation_and_collision": null,
+      "complete_transition": null,
+      "four_local_map_digests": null
+    },
+    "REPLAN_ONLY_vs_CMD": {
+      "receiver_goal": 53,
+      "receiver_route": 53,
+      "receiver_waypoint": 54,
+      "four_applied_residuals": null,
+      "four_prior_accelerations": 54,
+      "four_applied_accelerations": 54,
+      "four_next_positions": 54,
+      "four_next_velocities": 54,
+      "four_rewards": 54,
+      "complete_control": 54,
+      "complete_navigation_and_collision": 53,
+      "complete_transition": 53,
+      "four_local_map_digests": 55
+    }
+  },
+  "common_interval_exclusive_end": 56,
+  "arms": {
+    "CMD": {
+      "pre_send": {
+        "state": "c71fa5d93089b307d81f2cfe0c2f0a54561de93d37704591d5bbdc2f63c3ff7c",
+        "sender": 0,
+        "receiver": 1,
+        "sample": 52,
+        "kind": "COMMAND",
+        "payload": "00004040000070410000d040",
+        "tokens": 65536,
+        "sequence": 52
+      },
+      "frame": "0105000134000000340034000c00000000004040000070410000d040",
+      "received_frame": "0105000134000000340034000c00000000004040000070410000d040",
+      "header_bytes": 16,
+      "payload_bytes": 12,
+      "sampled": 52,
+      "sent": 52,
+      "due": 53,
+      "received": 53,
+      "receiver_before": {
+        "packet": 52,
+        "due": 53,
+        "command": [
+          12,
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "command_sample": 12,
+        "goal": [
+          3.0,
+          17.0,
+          6.5
+        ],
+        "last_plan": 53,
+        "path": [
+          [
+            7.0,
+            15.0,
+            5.5
+          ],
+          [
+            5.0,
+            17.0,
+            5.5
+          ],
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "waypoint": [
+          7.0,
+          15.0,
+          5.5
+        ],
+        "acks": [
+          [
+            0,
+            12
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            3,
+            15
+          ],
+          [
+            2,
+            18
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            3,
+            23
+          ]
+        ],
+        "last_replan_request": null
+      },
+      "receiver_after": {
+        "packet": 52,
+        "due": 53,
+        "command": [
+          52,
+          [
+            3.0,
+            15.0,
+            6.5
+          ]
+        ],
+        "command_sample": 52,
+        "goal": [
+          3.0,
+          17.0,
+          6.5
+        ],
+        "last_plan": -100000,
+        "path": [
+          [
+            7.0,
+            15.0,
+            5.5
+          ],
+          [
+            5.0,
+            17.0,
+            5.5
+          ],
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "waypoint": [
+          7.0,
+          15.0,
+          5.5
+        ],
+        "acks": [
+          [
+            0,
+            12
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            3,
+            15
+          ],
+          [
+            2,
+            18
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            3,
+            23
+          ],
+          [
+            0,
+            52
+          ]
+        ],
+        "last_replan_request": null
+      },
+      "order_at_53": [
+        "astar",
+        "rx",
+        "delivery_before",
+        "delivery_after",
+        "astar"
+      ],
+      "actual_astar_at_53": [
+        {
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "reachable": true,
+          "reason": null,
+          "cells": [
+            [
+              3,
+              7,
+              5
+            ],
+            [
+              2,
+              8,
+              5
+            ],
+            [
+              1,
+              8,
+              6
+            ]
+          ]
+        },
+        {
+          "goal": [
+            3.0,
+            15.0,
+            6.5
+          ],
+          "reachable": true,
+          "reason": null,
+          "cells": [
+            [
+              3,
+              7,
+              5
+            ],
+            [
+              2,
+              7,
+              5
+            ],
+            [
+              1,
+              7,
+              5
+            ],
+            [
+              1,
+              7,
+              6
+            ]
+          ]
+        }
+      ],
+      "action_window": [
+        {
+          "action_step": 52,
+          "next_state": 53,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            8.188488960266113,
+            14.979174613952637,
+            5.560451984405518
+          ],
+          "route": [],
+          "position": [
+            8.188488960266113,
+            14.979174613952637,
+            5.560451984405518
+          ],
+          "next_position": [
+            7.9296674728393555,
+            14.969321250915527,
+            5.549655914306641
+          ],
+          "next_velocity": [
+            -1.2941075563430786,
+            -0.049268800765275955,
+            -0.053981367498636246
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            1.0,
+            0.059297360479831696,
+            0.06999658793210983
+          ],
+          "applied_acc": [
+            1.0,
+            0.059297360479831696,
+            0.06999658793210983
+          ],
+          "collisions": [],
+          "astar": []
+        },
+        {
+          "action_step": 53,
+          "next_state": 54,
+          "goal": [
+            3.0,
+            15.0,
+            6.5
+          ],
+          "waypoint": [
+            7.0,
+            15.0,
+            5.5
+          ],
+          "route": [
+            [
+              7.0,
+              15.0,
+              5.5
+            ],
+            [
+              5.0,
+              15.0,
+              5.5
+            ],
+            [
+              3.0,
+              15.0,
+              5.5
+            ],
+            [
+              3.0,
+              15.0,
+              6.5
+            ]
+          ],
+          "position": [
+            7.9296674728393555,
+            14.969321250915527,
+            5.549655914306641
+          ],
+          "next_position": [
+            7.691965579986572,
+            14.961782455444336,
+            5.539734363555908
+          ],
+          "next_velocity": [
+            -1.188510537147522,
+            -0.03769184276461601,
+            -0.04960848018527031
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            0.4861035943031311,
+            0.08513008058071136,
+            0.012601438909769058
+          ],
+          "applied_acc": [
+            0.4861035943031311,
+            0.08513008058071136,
+            0.012601438909769058
+          ],
+          "collisions": [],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            },
+            {
+              "goal": [
+                3.0,
+                15.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            }
+          ]
+        },
+        {
+          "action_step": 54,
+          "next_state": 55,
+          "goal": [
+            3.0,
+            15.0,
+            6.5
+          ],
+          "waypoint": [
+            5.0,
+            15.0,
+            5.5
+          ],
+          "route": [
+            [
+              7.0,
+              15.0,
+              5.5
+            ],
+            [
+              5.0,
+              15.0,
+              5.5
+            ],
+            [
+              3.0,
+              15.0,
+              5.5
+            ],
+            [
+              3.0,
+              15.0,
+              6.5
+            ]
+          ],
+          "position": [
+            7.691965579986572,
+            14.961782455444336,
+            5.539734363555908
+          ],
+          "next_position": [
+            7.416869640350342,
+            14.956512451171875,
+            5.530806064605713
+          ],
+          "next_velocity": [
+            -1.3754793405532837,
+            -0.026349296793341637,
+            -0.044642046093940735
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            -1.0,
+            0.07581404596567154,
+            0.016496513038873672
+          ],
+          "applied_acc": [
+            -1.0,
+            0.07581404596567154,
+            0.016496513038873672
+          ],
+          "collisions": [],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                15.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            }
+          ]
+        },
+        {
+          "action_step": 55,
+          "next_state": 56,
+          "goal": [
+            3.0,
+            15.0,
+            6.5
+          ],
+          "waypoint": [
+            7.416869640350342,
+            14.956512451171875,
+            5.530806064605713
+          ],
+          "route": [],
+          "position": [
+            7.416869640350342,
+            14.956512451171875,
+            5.530806064605713
+          ],
+          "next_position": [
+            7.306035995483398,
+            14.954400062561035,
+            5.527537822723389
+          ],
+          "next_velocity": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            1.0,
+            0.028984226286411285,
+            0.044642046093940735
+          ],
+          "applied_acc": [
+            1.0,
+            0.028984226286411285,
+            0.044642046093940735
+          ],
+          "collisions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                15.0,
+                6.5
+              ],
+              "reachable": false,
+              "reason": "invalid_start"
+            }
+          ]
+        }
+      ],
+      "suffix_astar_calls": 13,
+      "terminal_step": 56,
+      "success": false,
+      "collision": true,
+      "timeout": false,
+      "first_collision_step": 56,
+      "collision_pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "terminal_reason": "obstacle_collision",
+      "full_episode": {
+        "send_bits": 29056,
+        "receive_bits": 28896
+      },
+      "actual_suffix_acks": [
+        {
+          "step": 55,
+          "sender": 3,
+          "receiver": 1,
+          "acknowledges_sequence": 33,
+          "bits": 160
+        }
+      ],
+      "suffix_wire": {
+        "tx_frames": 4,
+        "rx_frames": 3,
+        "send_bits": 1888,
+        "receive_bits": 1728
+      },
+      "outstanding_frames": 1,
+      "common_interval": {
+        "send_bits": 29056,
+        "receive_bits": 28896
+      }
+    },
+    "PAD": {
+      "pre_send": {
+        "state": "c71fa5d93089b307d81f2cfe0c2f0a54561de93d37704591d5bbdc2f63c3ff7c",
+        "sender": 0,
+        "receiver": 1,
+        "sample": 52,
+        "kind": "COMMAND_PAD",
+        "payload": "000000000000000000000000",
+        "tokens": 65536,
+        "sequence": 52
+      },
+      "frame": "010b000134000000340034000c000000000000000000000000000000",
+      "received_frame": "010b000134000000340034000c000000000000000000000000000000",
+      "header_bytes": 16,
+      "payload_bytes": 12,
+      "sampled": 52,
+      "sent": 52,
+      "due": 53,
+      "received": 53,
+      "receiver_before": {
+        "packet": 52,
+        "due": 53,
+        "command": [
+          12,
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "command_sample": 12,
+        "goal": [
+          3.0,
+          17.0,
+          6.5
+        ],
+        "last_plan": 53,
+        "path": [
+          [
+            7.0,
+            15.0,
+            5.5
+          ],
+          [
+            5.0,
+            17.0,
+            5.5
+          ],
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "waypoint": [
+          7.0,
+          15.0,
+          5.5
+        ],
+        "acks": [
+          [
+            0,
+            12
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            3,
+            15
+          ],
+          [
+            2,
+            18
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            3,
+            23
+          ]
+        ],
+        "last_replan_request": null
+      },
+      "receiver_after": {
+        "packet": 52,
+        "due": 53,
+        "command": [
+          12,
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "command_sample": 12,
+        "goal": [
+          3.0,
+          17.0,
+          6.5
+        ],
+        "last_plan": 53,
+        "path": [
+          [
+            7.0,
+            15.0,
+            5.5
+          ],
+          [
+            5.0,
+            17.0,
+            5.5
+          ],
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "waypoint": [
+          7.0,
+          15.0,
+          5.5
+        ],
+        "acks": [
+          [
+            0,
+            12
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            3,
+            15
+          ],
+          [
+            2,
+            18
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            3,
+            23
+          ],
+          [
+            0,
+            52
+          ]
+        ],
+        "last_replan_request": null
+      },
+      "order_at_53": [
+        "astar",
+        "rx",
+        "delivery_before",
+        "delivery_after"
+      ],
+      "actual_astar_at_53": [
+        {
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "reachable": true,
+          "reason": null,
+          "cells": [
+            [
+              3,
+              7,
+              5
+            ],
+            [
+              2,
+              8,
+              5
+            ],
+            [
+              1,
+              8,
+              6
+            ]
+          ]
+        }
+      ],
+      "action_window": [
+        {
+          "action_step": 52,
+          "next_state": 53,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            8.188488960266113,
+            14.979174613952637,
+            5.560451984405518
+          ],
+          "route": [],
+          "position": [
+            8.188488960266113,
+            14.979174613952637,
+            5.560451984405518
+          ],
+          "next_position": [
+            7.9296674728393555,
+            14.969321250915527,
+            5.549655914306641
+          ],
+          "next_velocity": [
+            -1.2941075563430786,
+            -0.049268800765275955,
+            -0.053981367498636246
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            1.0,
+            0.059297360479831696,
+            0.06999658793210983
+          ],
+          "applied_acc": [
+            1.0,
+            0.059297360479831696,
+            0.06999658793210983
+          ],
+          "collisions": [],
+          "astar": []
+        },
+        {
+          "action_step": 53,
+          "next_state": 54,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            7.0,
+            15.0,
+            5.5
+          ],
+          "route": [
+            [
+              7.0,
+              15.0,
+              5.5
+            ],
+            [
+              5.0,
+              17.0,
+              5.5
+            ],
+            [
+              3.0,
+              17.0,
+              6.5
+            ]
+          ],
+          "position": [
+            7.9296674728393555,
+            14.969321250915527,
+            5.549655914306641
+          ],
+          "next_position": [
+            7.691965579986572,
+            14.961782455444336,
+            5.539734363555908
+          ],
+          "next_velocity": [
+            -1.188510537147522,
+            -0.03769184276461601,
+            -0.04960848018527031
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            0.4861035943031311,
+            0.08513008058071136,
+            0.012601438909769058
+          ],
+          "applied_acc": [
+            0.4861035943031311,
+            0.08513008058071136,
+            0.012601438909769058
+          ],
+          "collisions": [],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            }
+          ]
+        },
+        {
+          "action_step": 54,
+          "next_state": 55,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            5.0,
+            17.0,
+            5.5
+          ],
+          "route": [
+            [
+              7.0,
+              15.0,
+              5.5
+            ],
+            [
+              5.0,
+              17.0,
+              5.5
+            ],
+            [
+              3.0,
+              17.0,
+              6.5
+            ]
+          ],
+          "position": [
+            7.691965579986572,
+            14.961782455444336,
+            5.539734363555908
+          ],
+          "next_position": [
+            7.431626796722412,
+            14.992592811584473,
+            5.530806064605713
+          ],
+          "next_velocity": [
+            -1.3016934394836426,
+            0.1540517956018448,
+            -0.044642046093940735
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            -0.6219982504844666,
+            1.0,
+            0.016496513038873672
+          ],
+          "applied_acc": [
+            -0.6219982504844666,
+            1.0,
+            0.016496513038873672
+          ],
+          "collisions": [],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            }
+          ]
+        },
+        {
+          "action_step": 55,
+          "next_state": 56,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            7.431626796722412,
+            14.992592811584473,
+            5.530806064605713
+          ],
+          "route": [],
+          "position": [
+            7.431626796722412,
+            14.992592811584473,
+            5.530806064605713
+          ],
+          "next_position": [
+            7.327604293823242,
+            15.003506660461426,
+            5.527537822723389
+          ],
+          "next_velocity": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            1.0,
+            -0.16945697367191315,
+            0.044642046093940735
+          ],
+          "applied_acc": [
+            1.0,
+            -0.16945697367191315,
+            0.044642046093940735
+          ],
+          "collisions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": false,
+              "reason": "invalid_start"
+            }
+          ]
+        }
+      ],
+      "suffix_astar_calls": 12,
+      "terminal_step": 56,
+      "success": false,
+      "collision": true,
+      "timeout": false,
+      "first_collision_step": 56,
+      "collision_pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "terminal_reason": "obstacle_collision",
+      "full_episode": {
+        "send_bits": 29056,
+        "receive_bits": 28896
+      },
+      "actual_suffix_acks": [
+        {
+          "step": 55,
+          "sender": 3,
+          "receiver": 1,
+          "acknowledges_sequence": 33,
+          "bits": 160
+        }
+      ],
+      "suffix_wire": {
+        "tx_frames": 4,
+        "rx_frames": 3,
+        "send_bits": 1888,
+        "receive_bits": 1728
+      },
+      "outstanding_frames": 1,
+      "common_interval": {
+        "send_bits": 29056,
+        "receive_bits": 28896
+      }
+    },
+    "REPLAN_ONLY": {
+      "pre_send": {
+        "state": "c71fa5d93089b307d81f2cfe0c2f0a54561de93d37704591d5bbdc2f63c3ff7c",
+        "sender": 0,
+        "receiver": 1,
+        "sample": 52,
+        "kind": "REPLAN_ONLY",
+        "payload": "000000000000000000000000",
+        "tokens": 65536,
+        "sequence": 52
+      },
+      "frame": "010c000134000000340034000c000000000000000000000000000000",
+      "received_frame": "010c000134000000340034000c000000000000000000000000000000",
+      "header_bytes": 16,
+      "payload_bytes": 12,
+      "sampled": 52,
+      "sent": 52,
+      "due": 53,
+      "received": 53,
+      "receiver_before": {
+        "packet": 52,
+        "due": 53,
+        "command": [
+          12,
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "command_sample": 12,
+        "goal": [
+          3.0,
+          17.0,
+          6.5
+        ],
+        "last_plan": 53,
+        "path": [
+          [
+            7.0,
+            15.0,
+            5.5
+          ],
+          [
+            5.0,
+            17.0,
+            5.5
+          ],
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "waypoint": [
+          7.0,
+          15.0,
+          5.5
+        ],
+        "acks": [
+          [
+            0,
+            12
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            3,
+            15
+          ],
+          [
+            2,
+            18
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            3,
+            23
+          ]
+        ],
+        "last_replan_request": null
+      },
+      "receiver_after": {
+        "packet": 52,
+        "due": 53,
+        "command": [
+          12,
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "command_sample": 12,
+        "goal": [
+          3.0,
+          17.0,
+          6.5
+        ],
+        "last_plan": -100000,
+        "path": [
+          [
+            7.0,
+            15.0,
+            5.5
+          ],
+          [
+            5.0,
+            17.0,
+            5.5
+          ],
+          [
+            3.0,
+            17.0,
+            6.5
+          ]
+        ],
+        "waypoint": [
+          7.0,
+          15.0,
+          5.5
+        ],
+        "acks": [
+          [
+            0,
+            12
+          ],
+          [
+            2,
+            14
+          ],
+          [
+            3,
+            15
+          ],
+          [
+            2,
+            18
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            3,
+            23
+          ],
+          [
+            0,
+            52
+          ]
+        ],
+        "last_replan_request": 52
+      },
+      "order_at_53": [
+        "astar",
+        "rx",
+        "delivery_before",
+        "delivery_after",
+        "astar"
+      ],
+      "actual_astar_at_53": [
+        {
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "reachable": true,
+          "reason": null,
+          "cells": [
+            [
+              3,
+              7,
+              5
+            ],
+            [
+              2,
+              8,
+              5
+            ],
+            [
+              1,
+              8,
+              6
+            ]
+          ]
+        },
+        {
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "reachable": true,
+          "reason": null,
+          "cells": [
+            [
+              3,
+              7,
+              5
+            ],
+            [
+              2,
+              8,
+              5
+            ],
+            [
+              1,
+              8,
+              6
+            ]
+          ]
+        }
+      ],
+      "action_window": [
+        {
+          "action_step": 52,
+          "next_state": 53,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            8.188488960266113,
+            14.979174613952637,
+            5.560451984405518
+          ],
+          "route": [],
+          "position": [
+            8.188488960266113,
+            14.979174613952637,
+            5.560451984405518
+          ],
+          "next_position": [
+            7.9296674728393555,
+            14.969321250915527,
+            5.549655914306641
+          ],
+          "next_velocity": [
+            -1.2941075563430786,
+            -0.049268800765275955,
+            -0.053981367498636246
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            1.0,
+            0.059297360479831696,
+            0.06999658793210983
+          ],
+          "applied_acc": [
+            1.0,
+            0.059297360479831696,
+            0.06999658793210983
+          ],
+          "collisions": [],
+          "astar": []
+        },
+        {
+          "action_step": 53,
+          "next_state": 54,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            7.0,
+            15.0,
+            5.5
+          ],
+          "route": [
+            [
+              7.0,
+              15.0,
+              5.5
+            ],
+            [
+              5.0,
+              17.0,
+              5.5
+            ],
+            [
+              3.0,
+              17.0,
+              6.5
+            ]
+          ],
+          "position": [
+            7.9296674728393555,
+            14.969321250915527,
+            5.549655914306641
+          ],
+          "next_position": [
+            7.691965579986572,
+            14.961782455444336,
+            5.539734363555908
+          ],
+          "next_velocity": [
+            -1.188510537147522,
+            -0.03769184276461601,
+            -0.04960848018527031
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            0.4861035943031311,
+            0.08513008058071136,
+            0.012601438909769058
+          ],
+          "applied_acc": [
+            0.4861035943031311,
+            0.08513008058071136,
+            0.012601438909769058
+          ],
+          "collisions": [],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            },
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            }
+          ]
+        },
+        {
+          "action_step": 54,
+          "next_state": 55,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            5.0,
+            17.0,
+            5.5
+          ],
+          "route": [
+            [
+              7.0,
+              15.0,
+              5.5
+            ],
+            [
+              5.0,
+              17.0,
+              5.5
+            ],
+            [
+              3.0,
+              17.0,
+              6.5
+            ]
+          ],
+          "position": [
+            7.691965579986572,
+            14.961782455444336,
+            5.539734363555908
+          ],
+          "next_position": [
+            7.431626796722412,
+            14.992592811584473,
+            5.530806064605713
+          ],
+          "next_velocity": [
+            -1.3016934394836426,
+            0.1540517956018448,
+            -0.044642046093940735
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            -0.6219982504844666,
+            1.0,
+            0.016496513038873672
+          ],
+          "applied_acc": [
+            -0.6219982504844666,
+            1.0,
+            0.016496513038873672
+          ],
+          "collisions": [],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": true,
+              "reason": null
+            }
+          ]
+        },
+        {
+          "action_step": 55,
+          "next_state": 56,
+          "goal": [
+            3.0,
+            17.0,
+            6.5
+          ],
+          "waypoint": [
+            7.431626796722412,
+            14.992592811584473,
+            5.530806064605713
+          ],
+          "route": [],
+          "position": [
+            7.431626796722412,
+            14.992592811584473,
+            5.530806064605713
+          ],
+          "next_position": [
+            7.327604293823242,
+            15.003506660461426,
+            5.527537822723389
+          ],
+          "next_velocity": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "residual": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "prior_acc": [
+            1.0,
+            -0.16945697367191315,
+            0.044642046093940735
+          ],
+          "applied_acc": [
+            1.0,
+            -0.16945697367191315,
+            0.044642046093940735
+          ],
+          "collisions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "astar": [
+            {
+              "goal": [
+                3.0,
+                17.0,
+                6.5
+              ],
+              "reachable": false,
+              "reason": "invalid_start"
+            }
+          ]
+        }
+      ],
+      "suffix_astar_calls": 13,
+      "terminal_step": 56,
+      "success": false,
+      "collision": true,
+      "timeout": false,
+      "first_collision_step": 56,
+      "collision_pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "terminal_reason": "obstacle_collision",
+      "full_episode": {
+        "send_bits": 29056,
+        "receive_bits": 28896
+      },
+      "actual_suffix_acks": [
+        {
+          "step": 55,
+          "sender": 3,
+          "receiver": 1,
+          "acknowledges_sequence": 33,
+          "bits": 160
+        }
+      ],
+      "suffix_wire": {
+        "tx_frames": 4,
+        "rx_frames": 3,
+        "send_bits": 1888,
+        "receive_bits": 1728
+      },
+      "outstanding_frames": 1,
+      "common_interval": {
+        "send_bits": 29056,
+        "receive_bits": 28896
+      }
+    }
+  },
+  "verified_original_batch": true,
+  "verified_original_aa": true
+}

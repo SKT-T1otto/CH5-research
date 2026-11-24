@@ -1,0 +1,143 @@
+{
+  "base_commit": "0a2de8bc965293d47c7f6dad29f1c520bdbe56a6",
+  "files": {
+    "chapter5_comm/protocol.py": {
+      "action": "modified",
+      "before": "f3353fe98fb006e017f7ff29b4596e80a7ab5c302f6dcafe1914228fc7e806e3",
+      "sha256": "05073028e946b82736f38b346b077f35b4ec29662a5fcdf69e4f036c423673f7",
+      "distribution": "git"
+    },
+    "chapter5_comm/runtime.py": {
+      "action": "modified",
+      "before": "f484a424b558bfcdf39807233f623ba2227d6d79d614b985a3ac898c1f284b42",
+      "sha256": "d5000e74044a1afa3a2299c1ab499903c6831a65fab22a5c6b91aac761a4cc76",
+      "distribution": "git"
+    },
+    "tools/command_control_trace.py": {
+      "action": "created",
+      "sha256": "eeac205653059dd7f60231a753d237c14132294e27b7ddef877fa270177ed8d1",
+      "distribution": "git"
+    },
+    "tools/accept_d2_command_controls_0002.py": {
+      "action": "created",
+      "sha256": "d2afc292b7cfa433bd6fdc6d514582970fd5463acca532f07a761a8e8991636e",
+      "distribution": "git"
+    },
+    "checks/test_d2_command_controls.py": {
+      "action": "created",
+      "sha256": "2dbadaccdc031311fb68fc804b210fc44a07c3c1d2756bdc0358946152e415ea",
+      "distribution": "git"
+    },
+    "checks/fixtures/d2_command_controls_0002.json": {
+      "action": "created",
+      "sha256": "5cba404a54cdaeaca2557f800cc802cd0f4f0950cde6f7913546e4d18c20b79f",
+      "distribution": "git"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/CMD.json.gz": {
+      "action": "created",
+      "sha256": "cfef867b25ca1582f073b7ae47e2139567b9b7f43cc06be1d427c8121b6d42c8",
+      "bytes": 11545,
+      "distribution": "local"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/common.json.gz": {
+      "action": "created",
+      "sha256": "885211e1772c692caeaac7f496d45661d4e33113e610097d644e44862fd0be96",
+      "bytes": 72142,
+      "distribution": "local"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/PAD.json.gz": {
+      "action": "created",
+      "sha256": "1896b9b190d296221e29ec2f376a8a6e573444f542b449ae504a353bf4f4d116",
+      "bytes": 11443,
+      "distribution": "local"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/REPLAN_ONLY.json.gz": {
+      "action": "created",
+      "sha256": "8242da4b5a5536c2a6fd24ab9abd3e18c1b0f3e2c79d8204c5b224f474daefae",
+      "bytes": 11480,
+      "distribution": "local"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/REPORT.md": {
+      "action": "created",
+      "sha256": "f0597c65431417564a30aee124204313fe1d10cb7d7d37d0fed1a24bc8ba3289",
+      "bytes": 5376,
+      "distribution": "git"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/validation.json": {
+      "action": "created",
+      "sha256": "a36aa50b37d1a22e84e25952c260c5e0a58b72acbbc04c49d2753406a6201dbf",
+      "bytes": 36475,
+      "distribution": "git"
+    },
+    "outputs/chapter5/audits/case_0002_command_controls_20261124/created_files.json": {
+      "action": "created",
+      "distribution": "git",
+      "self_hash": "excluded"
+    }
+  },
+  "protected": {
+    "reference_sha256": "f5a462ab38c46cfcb5cf171f4a368e8f78aac77e9bd1d2c4e8a67d06b15a30ce",
+    "before": {
+      "CH3": {
+        "files": 369,
+        "sha256": "75dd64c109b00336fe8ade96eb14d0fd36a0c13f0800cfd7156438f3f14644b0"
+      },
+      "CH4": {
+        "files": 103,
+        "sha256": "e79f7d8dbb6d5eafbd18f50df606ef2116f4aa672bada27fb5682960603257d1"
+      },
+      "CH5": {
+        "files": 318,
+        "sha256": "b00ddca9b65f00b4eaf3c719e7ca122d7497c9fd52bb9a339db996f7a6609396"
+      }
+    },
+    "after": {
+      "CH3": {
+        "files": 369,
+        "sha256": "75dd64c109b00336fe8ade96eb14d0fd36a0c13f0800cfd7156438f3f14644b0"
+      },
+      "CH4": {
+        "files": 103,
+        "sha256": "e79f7d8dbb6d5eafbd18f50df606ef2116f4aa672bada27fb5682960603257d1"
+      },
+      "CH5": {
+        "files": 318,
+        "sha256": "b00ddca9b65f00b4eaf3c719e7ca122d7497c9fd52bb9a339db996f7a6609396"
+      }
+    },
+    "checked_each_file": true
+  },
+  "history": {
+    "original_plan_sha256": "c23d522ae46e8233576b95c0c3525e8ffdf414653da3c27759805e4c3c1aa32d",
+    "original_case_verified": {
+      "channel.json": "4fa380d5a94c68d1c7be3f82192f50040a405bf7c646cd80df9c74615f5a6027",
+      "evidence.json": "960b6491f4c68f96c6a7eab567e7e962adf4a39f97c227c565ed55e0bf05f96a",
+      "occupancy.npz": "bf3a7bcd2e5c490a4b4222e7f9ecbdd6e3fb6012273a39071fd27b610193e906",
+      "replans.json": "6313e4b9876dfa6aca020f8897372bad5c74123a6261a0a95c56cd7f0a80f049",
+      "summary.json": "e01fce0099a4acf8c87126f6fd6d52a76abcc788e21b05ab7316ed6636f9ab29",
+      "trajectory.json": "a4151571e2eddf3d717a607782f9cb7b6ae2c848f525ecc31d03175eca5e464b"
+    },
+    "windows_aa_verified": {
+      "common.json": "b59bd1fad5cd8a37b6bc81b4dd7405f8f365a6e94dfabc5442efab0d4f245f88",
+      "A.json": "65d91aa855068c5f939255a4ba90d02d2ca31e1236c259a5770994c97a5545fd",
+      "validation.json": "74ed71c33546cdb4aa01054d5ddcf7fe7a66ccba36259cb687df301c1d2ac0a3"
+    },
+    "original_batch_source_files": 243,
+    "original_source_differences": [
+      "chapter5_comm/protocol.py",
+      "chapter5_comm/runtime.py"
+    ],
+    "previous_untracked_audit_tools_verified": 4
+  },
+  "tests": {
+    "command": "python -B -m unittest checks.test_d2_command_controls checks.test_ch5_runtime",
+    "passed": 19
+  },
+  "simulations": {
+    "case": "0002",
+    "physical_seed": 2026111903,
+    "common_prefixes": 1,
+    "branch_continuations": 3,
+    "training_updates": 0
+  }
+}
