@@ -1,0 +1,131 @@
+{
+  "algorithm_common_fields": {
+    "name": "MADDPG",
+    "actors": 4,
+    "critics": 4,
+    "critics_per_vehicle": 1,
+    "decentralized_actor_input_dim": 28,
+    "centralized_critic_input_dim": 124,
+    "actor_hidden": [
+      128,
+      128
+    ],
+    "critic_hidden": [
+      256,
+      256
+    ],
+    "input_normalization": "LayerNorm",
+    "actor_output": "tanh",
+    "critic_loss": "mse",
+    "target_critic_reduction": "single",
+    "target_value_clip": null,
+    "target_action_noise": 0.0,
+    "actor_other_actions": "replay_applied_actions",
+    "actor_regularization": 0.0,
+    "actor_sample_mask": "execution_gate_open",
+    "replay_sampling": "uniform",
+    "replay_reward_normalization": false,
+    "policy_sharing": false,
+    "actor_truth_parameters_visible": false,
+    "actor_privileged_state_visible": false
+  },
+  "learning_common_fields": {
+    "batch_size": 128,
+    "replay_capacity": 500000,
+    "warmup_steps": 256,
+    "update_frequency": 4,
+    "updates_per_train": 2,
+    "gamma": 0.95,
+    "tau": 0.005,
+    "actor_lr": 0.001,
+    "critic_lr": 0.0005,
+    "optimizer": "Adam",
+    "learner_device": "cpu",
+    "cpu_threads": 1,
+    "exploration": {
+      "type": "OU",
+      "initial_sigma": 0.2,
+      "minimum_sigma": 0.02,
+      "decay_per_environment_step": 2e-05,
+      "evaluation_sigma": 0.0
+    },
+    "pilot_episodes": 64,
+    "budget_observations": [
+      200,
+      500,
+      1000
+    ],
+    "maximum_episodes_per_seed": 1000,
+    "selection": "minimum validation mean penalized completion steps, earlier checkpoint on ties"
+  },
+  "task_common_fields": {
+    "action_dim": 3,
+    "agents": 4,
+    "collision_detection_revision": "segment_closed_aabb_v1",
+    "collision_terminal_reward": -2.0,
+    "critic_input_dim": 124,
+    "dt": 0.2,
+    "failure_penalty_steps": 100,
+    "gamma": 0.95,
+    "max_steps": 400,
+    "observation_dim": 28,
+    "planner_protocol": "d2_v1",
+    "profile": "M20_MOVING_UNKNOWN_MULTI",
+    "repairs": {
+      "waypoint_arrival": true,
+      "inactive_actor": true,
+      "hold_residual": true
+    },
+    "residual_scale_executor": 0.15,
+    "residual_scale_search": 0.2,
+    "reward_objective": "team_mean_v1",
+    "task_protocol": "collision_terminal_v1",
+    "terminal_reward_revision": "team_failure_override_v1",
+    "waypoint_reward_timing": "arrival_before_reward_v1"
+  },
+  "ch4_algorithm_revision": "ch4.maddpg.single_critic.v1",
+  "ch5_algorithm_revision": "ch5.maddpg.single_critic.v1",
+  "environment_differences": [
+    {
+      "field": "horizontal_dynamics",
+      "ch4": "relative-water linear drag; water speed amplitude 0.10 m/s",
+      "ch5": "native sequential acceleration update; additive flow forcing amplitude 0.18; different units/meaning"
+    },
+    {
+      "field": "actuator_memory",
+      "ch4": 0.15,
+      "ch5": 0.0
+    },
+    {
+      "field": "map_and_navigation",
+      "ch4": "inherited shared-map D2 runtime",
+      "ch5": "causal_d2_v1; four receiver-local maps; own_history_v1/native"
+    },
+    {
+      "field": "handoff_and_communication",
+      "ch4": "inherited fixed reliable handoff",
+      "ch5": "all message types use costed TDMA; actual delivery required"
+    },
+    {
+      "field": "new_scene_seed_blocks",
+      "ch4": [
+        6100000,
+        6200000,
+        6300000,
+        6400000,
+        6500000
+      ],
+      "ch5": [
+        7100000,
+        7200000,
+        7300000,
+        7400000
+      ]
+    }
+  ],
+  "plant_migrated": false,
+  "plant_migration_status": "REVIEW_REQUIRED",
+  "migration_reason": "different equations, units and actuator memory; requires an independent physical-factor study",
+  "runtime_sibling_imports": false,
+  "ch4_source_receipt": "c4b74c5954672adc615917002f34b7325f159dd69879b855f10050155a2fd95e"
+}

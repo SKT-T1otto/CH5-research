@@ -1,0 +1,138 @@
+{
+  "schema": "auv.ch5.maddpg.step1.acceptance.v1",
+  "date": "2026-11-25",
+  "passed": true,
+  "step1_registration_passed": true,
+  "config_parsed": true,
+  "scenes": {
+    "groups": {
+      "train": {
+        "count": 1000,
+        "fingerprints_sha256": "083de849828996be5b3b58ad618f6dc4a87d0da25b78566f466dce708b6a8c7f"
+      },
+      "validation": {
+        "count": 32,
+        "fingerprints_sha256": "3368002475b14a45b4e533df0d21e2a6ebf92d44c9fe0fbeb6669c839eab6e40"
+      },
+      "baseline_admission": {
+        "count": 100,
+        "fingerprints_sha256": "d38cea9fa70a1a77846f83bd6b69d67cc1d312f0a28e0260bd51df1fceecd75d"
+      },
+      "link_fault_development": {
+        "count": 24,
+        "fingerprints_sha256": "5e65f35fd1eb15402ad268e822a8f3ccd632986cad14c2ebb66c26d054558dd4"
+      }
+    },
+    "total_scenes": 1156,
+    "history_counts": {
+      "historical_30": 30,
+      "development_24": 24
+    },
+    "history_overlap": 0,
+    "cross_group_overlap": 0
+  },
+  "registry_tests": {
+    "passed": true,
+    "tests_run": 14,
+    "exit_code": 0,
+    "wall_seconds": 8.871600399997988,
+    "log_sha256": "52a44072ab734e5c20aaa2b5ed69fc2754db03be1aa3536d0c73e2bd2961e0ff"
+  },
+  "existing_protocol_tests": {
+    "command": "D:/anaconda/anaconda/envs/AUV/python.exe -B -m unittest checks.test_ch5_history_rules -v",
+    "tests_run": 2,
+    "exit_code": 0,
+    "unittest_seconds": 106.098,
+    "passed": true,
+    "task_physics_steps": 0,
+    "optimizer_updates": 0,
+    "scope": "correction/tie ranking plus initialized send/delivery ledger checks for six rules; no task trajectory",
+    "input_hashes": {
+      "checks/test_ch5_history_rules.py": "1220acc67321f051848b0f880011713129242bf1fb21d57fdc6cabfaa09b3f2a",
+      "chapter5_comm/runtime.py": "ecd8b67ee08b76a851ac211bcef6f981b1032077b2b1029e370ae0fa29c57b7e",
+      "chapter5_comm/history_rules.py": "ed23653f6460a4b3f1e4e5304d2368cd70b660e1b5b6ccd1d9c617c4def21935",
+      "chapter5_comm/history_evidence.py": "446471f2172e6dc93e6f87ed4b5bfbf213c2e9342c58603973b5821bf8a08e38",
+      "chapter5_comm/protocol.py": "05073028e946b82736f38b346b077f35b4ec29662a5fcdf69e4f036c423673f7",
+      "configs/b2.json": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48",
+      "configs/environment.json": "d5881ea13b6f856e55f06051287761e9eca7c65739e03fb9232f6cadf5c1cb52"
+    }
+  },
+  "regeneration": {
+    "passed": true,
+    "count": 12,
+    "indices": "first/middle/last per group",
+    "scene_ids": [
+      "ch5_maddpg_train_7100000",
+      "ch5_maddpg_train_7100500",
+      "ch5_maddpg_train_7100999",
+      "ch5_maddpg_validation_7200000",
+      "ch5_maddpg_validation_7200016",
+      "ch5_maddpg_validation_7200031",
+      "ch5_maddpg_baseline_admission_7300000",
+      "ch5_maddpg_baseline_admission_7300050",
+      "ch5_maddpg_baseline_admission_7300099",
+      "ch5_maddpg_link_fault_development_7400000",
+      "ch5_maddpg_link_fault_development_7400012",
+      "ch5_maddpg_link_fault_development_7400023"
+    ]
+  },
+  "source": {
+    "passed": true,
+    "source_files": 292,
+    "source_tree_sha256": "9104473a7f55caa04643a1e3ed2fd85994fa28fc4c4d50dbf96d4533cea57593",
+    "source_capsule_verified": true,
+    "manifest_sha256": "1f00d0a7eded67b4b96564178d005db21b5720fc827c2d238dc666e54993ccfe",
+    "weights_loaded": [],
+    "physics_steps": 0,
+    "optimizer_updates": 0
+  },
+  "preexisting_project_files_checked": 1325,
+  "preexisting_project_byte_changes": [],
+  "protected_directories": {
+    "CH3": {
+      "files": 369,
+      "bytes": 2133039295,
+      "before_sha256": "480ec47332e83375d6d127ac4a6719c3124eb59ebfe568249eeb210299f5cfd8",
+      "after_sha256": "480ec47332e83375d6d127ac4a6719c3124eb59ebfe568249eeb210299f5cfd8",
+      "unchanged": true
+    },
+    "CH4": {
+      "files": 103,
+      "bytes": 216010748,
+      "before_sha256": "e44d3603c4bda019bd4c6e5ebd770bf5172181a45b2af77e0a25c7a5e12b63fd",
+      "after_sha256": "e44d3603c4bda019bd4c6e5ebd770bf5172181a45b2af77e0a25c7a5e12b63fd",
+      "unchanged": true
+    },
+    "CH5": {
+      "files": 318,
+      "bytes": 488774083,
+      "before_sha256": "9781f228d8f115b19fce684e9203c1dc229489fb14111a296e9d30b01912d46e",
+      "after_sha256": "9781f228d8f115b19fce684e9203c1dc229489fb14111a296e9d30b01912d46e",
+      "unchanged": true
+    }
+  },
+  "original_history_inputs": {
+    "historical_30": {
+      "sha256": "c23d522ae46e8233576b95c0c3525e8ffdf414653da3c27759805e4c3c1aa32d",
+      "unchanged": true
+    },
+    "development_24": {
+      "sha256": "b7be19716d293c263d33a12f863330dcd0859f1a6d0183d45da7b3dd176cab70",
+      "unchanged": true
+    }
+  },
+  "ch4_plant_migrated": false,
+  "ch4_plant_migration_status": "REVIEW_REQUIRED",
+  "existing_dependencies_versioned": [
+    "chapter5_comm/runtime.py",
+    "chapter5_comm/history_rules.py",
+    "checks/test_ch5_history_rules.py"
+  ],
+  "task_rollouts": 0,
+  "mission_physics_steps": 0,
+  "optimizer_updates": 0,
+  "weights_loaded": [],
+  "learner_implemented": false,
+  "performance_admitted": false,
+  "next_allowed_stage": "network construction only; separate validation required"
+}

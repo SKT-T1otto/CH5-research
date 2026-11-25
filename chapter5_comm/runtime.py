@@ -26,7 +26,7 @@ from chapter3_bser.experiments.coupled_search_v1.execution_forecast import nomin
 from .d2_navigation import LocalD2Allocator
 from .protocol import COMMAND_CONTROLS, COMMAND_PADDING, D2CommandOverride, Kind, TDMAChannel
 from .search_braking import stopping_risk
-from . import history_evidence
+from . import history_evidence, history_rules
 
 
 VEC6 = struct.Struct("<6f")
@@ -270,7 +270,7 @@ class CH5Runtime:
     def __init__(self, config, scenario=None, *, seed=1, episode_id=0,
                  channel_config=None, horizon=8, candidate_count=4, map_token_count=32,
                  navigation="local_waypoints_v1", early_brake=False, scan_first=False,
-                 map_transport="raw_scan", command_override=None):
+                 map_transport="raw_scan", command_override=None, history_rule="native", history_tie_seed=11):
         validate_task_config(config)
         self.config, self.scenario = deepcopy(config), deepcopy(scenario)
         self.seed, self.episode_id = int(seed), int(episode_id)
@@ -278,6 +278,11 @@ class CH5Runtime:
         self.map_token_count = int(map_token_count)
         if map_transport not in ('raw_scan', 'own_history_v1'):
             raise ValueError('unknown map transport')
+        if history_rule not in history_rules.RULES or (history_rule != 'native' and map_transport != 'own_history_v1'):
+            raise ValueError('history rule requires a supported historical map transport')
+        if not 0 <= history_tie_seed < 2**32 or int(history_tie_seed) != history_tie_seed:
+            raise ValueError('history tie seed must be a uint32')
+        self.history_rule, self.history_tie_seed = history_rule, int(history_tie_seed)
         self.map_transport = map_transport
         if navigation not in ("local_waypoints_v1", "causal_d2_v1"):
             raise ValueError("unknown Chapter 5 navigation")
@@ -636,8 +641,13 @@ class CH5Runtime:
                     (self.step, receiver) == (override.step, override.receiver)):
                 wire_kind, payload = override.kind, COMMAND_PADDING
             if kind == Kind.SCAN and self.map_transport == 'own_history_v1':
-                payload, entries = history_evidence.encode(local.own_evidence,
-                    self._evidence_sent.get((sender, receiver), {}).items())
+                previous = self._evidence_sent.get((sender, receiver), {})
+                payload, entries = history_evidence.encode(local.own_evidence, previous.items())
+                if self.history_rule != 'native':
+                    query = local.queries.get(receiver) if self.history_rule in ('straight', 'route', 'route_tie') else None
+                    payload, entries = history_rules.encode(local.own_evidence, local.mapper, previous,
+                        payload, entries, self.history_rule, None if query is None else query[1],
+                        sender, receiver, self.step, self.history_tie_seed)
                 wire_kind = Kind.MAP_EVIDENCE
             result = self._send(wire_kind, sender, receiver, payload, sample)
             if entries is not None and result['accepted']:

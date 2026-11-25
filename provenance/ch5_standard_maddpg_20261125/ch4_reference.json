@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-25",
+  "files": {
+    "configs/ch4/nominal_maddpg.json": {
+      "original_path": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-CH4-IntervalRobust\\configs\\ch4\\nominal_maddpg.json",
+      "sha256": "a6c527260f0da998129c3246dc1fd7fbe1d3b449330f80b7064ac5e51148d251",
+      "archived_path": "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/configs/ch4/nominal_maddpg.json"
+    },
+    "chapter4_interval_robust/nominal_maddpg/config.py": {
+      "original_path": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-CH4-IntervalRobust\\chapter4_interval_robust\\nominal_maddpg\\config.py",
+      "sha256": "1dd0f6fa3563b6bcacff32f84a6b9b192781eae2cecc71fb697a66c46e57d2c2",
+      "archived_path": "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/nominal_maddpg/config.py"
+    },
+    "chapter4_interval_robust/nominal_maddpg/README.md": {
+      "original_path": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-CH4-IntervalRobust\\chapter4_interval_robust\\nominal_maddpg\\README.md",
+      "sha256": "00a9fa61798c196ca70a75479d6fd403f7bb30c4a7231a87cbfb25e15684edda",
+      "archived_path": "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/nominal_maddpg/README.md"
+    },
+    "chapter4_interval_robust/nominal_maddpg/runtime.py": {
+      "original_path": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-CH4-IntervalRobust\\chapter4_interval_robust\\nominal_maddpg\\runtime.py",
+      "sha256": "be85a7ba5bee9b62e275cd0402dd8454c27bbc1cdb825625185c1c44e532cd3d",
+      "archived_path": "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/nominal_maddpg/runtime.py"
+    },
+    "chapter4_interval_robust/scenarios.py": {
+      "original_path": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-CH4-IntervalRobust\\chapter4_interval_robust\\scenarios.py",
+      "sha256": "a2dc5a00ec78e1c03e76d74d4fb4fd256abb02c66da0972699924e53ee6d6f54",
+      "archived_path": "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/scenarios.py"
+    },
+    "experiments/ch4_work1_recoverability/plant_adapter.py": {
+      "original_path": "E:\\gym\\code\\WORKSPACE\\AUV-Thesis-CH4-IntervalRobust\\experiments\\ch4_work1_recoverability\\plant_adapter.py",
+      "sha256": "5da1b37d6e99670467bb61261c7d73cac0fc87bed01a5681d6dcca9c8ae3eb5e",
+      "archived_path": "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/experiments/ch4_work1_recoverability/plant_adapter.py"
+    }
+  },
+  "git_head": "3f0be86c65f43d7a2b5b061ed656b407baedc483",
+  "git_status": " M experiments/ch4_work1_recoverability/run.py\n M experiments/ch4_work1_recoverability/test_work1.py\n?? chapter4_interval_robust/nominal_maddpg/\n?? checks/chapter4/test_nominal_maddpg.py\n?? checks/chapter4/test_nominal_runtime.py\n?? configs/ch4/nominal_maddpg.json\n?? configs/ch4/nominal_maddpg_runtime.json\n?? configs/ch4/nominal_maddpg_scenes.json\n?? docs/chapter4/research_plan_maddpg_20261124/\n?? docs/chapter4/research_plan_peer_evidence_20261123/\n?? experiments/ch4_work1_recoverability/plant_adapter.py\n?? experiments/ch4_work1_recoverability/records.py\n?? experiments/ch4_work1_recoverability/report.py\n?? experiments/ch4_work1_recoverability/results/\n?? experiments/d2_action_rank_20261124/\n?? provenance/ch4/nominal_maddpg/\n?? provenance/ch4/source_v0010.json\n?? provenance/ch4/source_v0011.json\n?? verification/nominal_maddpg_runtime_20261125/\n?? verification/nominal_maddpg_steps12_20261125/\n",
+  "imported_at_runtime": false,
+  "plant_migration_approved": false,
+  "migration_status": "REVIEW_REQUIRED: independent relative-water dynamics are not the CH5 native plant"
+}

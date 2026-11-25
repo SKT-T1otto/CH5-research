@@ -1,0 +1,150 @@
+{
+  "created_files": {
+    "chapter5_comm/nominal_maddpg/__init__.py": {
+      "sha256": "ef9642330b2fe9a1d65c8ab33a5cf53ae8faccfb56aa0e3eb05614dc8aff3acb",
+      "bytes": 134
+    },
+    "chapter5_comm/nominal_maddpg/__main__.py": {
+      "sha256": "41bc35590505402d31072ccd72b6d36b4136462a6bf282a39df4c97c4e3989aa",
+      "bytes": 1941
+    },
+    "chapter5_comm/nominal_maddpg/config.py": {
+      "sha256": "f2313153619d5a10f457141aba97866d39ddc9a1edc791cfe39df39a95e52dcf",
+      "bytes": 12103
+    },
+    "chapter5_comm/nominal_maddpg/provenance.py": {
+      "sha256": "a207f26dcc22da0185e8dd2b7b2b2a4932da314afc1682b2ae9f6a1dd6668333",
+      "bytes": 9558
+    },
+    "chapter5_comm/nominal_maddpg/scenarios.py": {
+      "sha256": "22bb6c159de192b6382ebc5fda5b6e53e9d481d78282fcb47436704c171fb8d3",
+      "bytes": 8039
+    },
+    "checks/test_ch5_nominal_registration.py": {
+      "sha256": "e1007870333d454643dfab62967f5afff497b07958f289d35c568a930aac58d4",
+      "bytes": 8048
+    },
+    "configs/chapter5/nominal_maddpg.json": {
+      "sha256": "8da89873f63a4d07cf97252733dab6aaae022555641bc8e089803fe4e0772f5d",
+      "bytes": 4827
+    },
+    "configs/chapter5/nominal_maddpg_scenes.json": {
+      "sha256": "bb9968b0b4c1e42116d707b91f8942ec94ada48e16c869b7103c342ef4b54f16",
+      "bytes": 4426800
+    },
+    "docs/CH5_STANDARD_MADDPG_STEP1_20261125.md": {
+      "sha256": "d11f2d2e1692d535ef903c8f4c2b679fb375316d85732f3ed04cc4533667ab58",
+      "bytes": 6518
+    },
+    "provenance/ch5_standard_maddpg_20261125/ch4_ch5_comparison.json": {
+      "sha256": "01b2660e72b16e9e714befeebd218ff53c718542bb597c5f15f4cee4984f5c66",
+      "bytes": 3761
+    },
+    "provenance/ch5_standard_maddpg_20261125/ch4_reference.json": {
+      "sha256": "c4b74c5954672adc615917002f34b7325f159dd69879b855f10050155a2fd95e",
+      "bytes": 3672
+    },
+    "provenance/ch5_standard_maddpg_20261125/history_exclusion.json": {
+      "sha256": "17622259bd879e4bcd33d4eccbdbe124c227ac6e7816bdf50d2a384bdd5a51f3",
+      "bytes": 15693
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/nominal_maddpg/README.md": {
+      "sha256": "00a9fa61798c196ca70a75479d6fd403f7bb30c4a7231a87cbfb25e15684edda",
+      "bytes": 3676
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/nominal_maddpg/config.py": {
+      "sha256": "1dd0f6fa3563b6bcacff32f84a6b9b192781eae2cecc71fb697a66c46e57d2c2",
+      "bytes": 9606
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/nominal_maddpg/runtime.py": {
+      "sha256": "be85a7ba5bee9b62e275cd0402dd8454c27bbc1cdb825625185c1c44e532cd3d",
+      "bytes": 11643
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/chapter4_interval_robust/scenarios.py": {
+      "sha256": "a2dc5a00ec78e1c03e76d74d4fb4fd256abb02c66da0972699924e53ee6d6f54",
+      "bytes": 1190
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/configs/ch4/nominal_maddpg.json": {
+      "sha256": "a6c527260f0da998129c3246dc1fd7fbe1d3b449330f80b7064ac5e51148d251",
+      "bytes": 6034
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/ch4/experiments/ch4_work1_recoverability/plant_adapter.py": {
+      "sha256": "5da1b37d6e99670467bb61261c7d73cac0fc87bed01a5681d6dcca9c8ae3eb5e",
+      "bytes": 4755
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/development_24.json": {
+      "sha256": "b7be19716d293c263d33a12f863330dcd0859f1a6d0183d45da7b3dd176cab70",
+      "bytes": 85688
+    },
+    "provenance/ch5_standard_maddpg_20261125/reference_inputs/historical_30.json": {
+      "sha256": "c23d522ae46e8233576b95c0c3525e8ffdf414653da3c27759805e4c3c1aa32d",
+      "bytes": 128037
+    },
+    "provenance/ch5_standard_maddpg_20261125/resolved.json": {
+      "sha256": "b474d3bc4531515efaefd64c8735cbb14deb00a14ece06dbefb6a6401db4e739",
+      "bytes": 27507
+    },
+    "provenance/ch5_standard_maddpg_20261125/source_manifest.json": {
+      "sha256": "1f00d0a7eded67b4b96564178d005db21b5720fc827c2d238dc666e54993ccfe",
+      "bytes": 52844
+    },
+    "provenance/ch5_standard_maddpg_20261125/source_snapshot.zip": {
+      "sha256": "b850b8b1c257dfe66d5ac591f6cb558bbe3149e25e520fd81205911d450f2a1d",
+      "bytes": 1274574
+    },
+    "tools/audit_ch5_maddpg_registration.py": {
+      "sha256": "385fd8fa39dbc865d431dacc108da5921a6ecfd1d1e7f02780395b6a676a2c7e",
+      "bytes": 8367
+    },
+    "tools/register_ch5_maddpg_inputs.py": {
+      "sha256": "11204bfbdb12b82868d7adef84ff7e457040bef3bc485583364b9f5b9cf35f21",
+      "bytes": 3777
+    },
+    "verification/ch5_standard_maddpg_step1_20261125/REPORT.md": {
+      "sha256": "47bacd16c8afea7756016fafb7bed1508b3e41dfe77e619c580c5639cd72fb9c",
+      "bytes": 1796
+    },
+    "verification/ch5_standard_maddpg_step1_20261125/validation.json": {
+      "sha256": "2a6f30c2b112316d39889f165bd010fc086bbc55515c0a342c4474695fb14f40",
+      "bytes": 5100
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/before.json": {
+      "sha256": "ed4f735344df1930ef77001a5d07504b09773f969e836a62688b95ef61571c81",
+      "bytes": 443881
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/history_rule_tests.json": {
+      "sha256": "9de152f270be7abb51b8d026e4dd182bc7512e4e768e586e300459ff04e82dd0",
+      "bytes": 1101
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/preliminary_ch4_comparison.json": {
+      "sha256": "01b2660e72b16e9e714befeebd218ff53c718542bb597c5f15f4cee4984f5c66",
+      "bytes": 3761
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/preliminary_resolved.json": {
+      "sha256": "b474d3bc4531515efaefd64c8735cbb14deb00a14ece06dbefb6a6401db4e739",
+      "bytes": 27507
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/registration_tests.txt": {
+      "sha256": "52a44072ab734e5c20aaa2b5ed69fc2754db03be1aa3536d0c73e2bd2961e0ff",
+      "bytes": 1483
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/REPORT.md": {
+      "sha256": "47bacd16c8afea7756016fafb7bed1508b3e41dfe77e619c580c5639cd72fb9c",
+      "bytes": 1796
+    },
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/validation.json": {
+      "sha256": "2a6f30c2b112316d39889f165bd010fc086bbc55515c0a342c4474695fb14f40",
+      "bytes": 5100
+    }
+  },
+  "self_excluded": [
+    "outputs/chapter5/audits/standard_maddpg_step1_20261125/created_files.json",
+    "verification/ch5_standard_maddpg_step1_20261125/created_files.json"
+  ],
+  "modified_preexisting_files": [],
+  "existing_dependencies_versioned": [
+    "chapter5_comm/runtime.py",
+    "chapter5_comm/history_rules.py",
+    "checks/test_ch5_history_rules.py"
+  ]
+}

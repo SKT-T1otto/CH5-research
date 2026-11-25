@@ -1,0 +1,175 @@
+{
+  "schema": "auv.ch5.nominal_maddpg.registration.v1",
+  "date": "2026-11-25",
+  "task_reference": {
+    "path": "configs/b2.json",
+    "sha256": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48"
+  },
+  "environment_reference": {
+    "path": "configs/environment.json",
+    "sha256": "d5881ea13b6f856e55f06051287761e9eca7c65739e03fb9232f6cadf5c1cb52"
+  },
+  "task": {
+    "profile": "M20_MOVING_UNKNOWN_MULTI",
+    "max_steps": 400,
+    "dt": 0.2,
+    "agents": 4,
+    "observation_dim": 28,
+    "action_dim": 3,
+    "critic_input_dim": 124,
+    "residual_scale_search": 0.2,
+    "residual_scale_executor": 0.15,
+    "reward_objective": "team_mean_v1",
+    "gamma": 0.95,
+    "task_protocol": "collision_terminal_v1",
+    "failure_penalty_steps": 100
+  },
+  "algorithm": {
+    "name": "MADDPG",
+    "revision": "ch5.maddpg.single_critic.v1",
+    "actors": 4,
+    "critics": 4,
+    "critics_per_vehicle": 1,
+    "decentralized_actor_input_dim": 28,
+    "centralized_critic_input_dim": 124,
+    "actor_hidden": [
+      128,
+      128
+    ],
+    "critic_hidden": [
+      256,
+      256
+    ],
+    "input_normalization": "LayerNorm",
+    "actor_output": "tanh",
+    "critic_loss": "mse",
+    "target_critic_reduction": "single",
+    "target_value_clip": null,
+    "target_action_noise": 0.0,
+    "actor_other_actions": "replay_applied_actions",
+    "actor_regularization": 0.0,
+    "actor_sample_mask": "execution_gate_open",
+    "replay_sampling": "uniform",
+    "replay_reward_normalization": false,
+    "policy_sharing": false,
+    "actor_truth_parameters_visible": false,
+    "actor_privileged_state_visible": false
+  },
+  "learning": {
+    "batch_size": 128,
+    "replay_capacity": 500000,
+    "warmup_steps": 256,
+    "update_frequency": 4,
+    "updates_per_train": 2,
+    "gamma": 0.95,
+    "tau": 0.005,
+    "actor_lr": 0.001,
+    "critic_lr": 0.0005,
+    "optimizer": "Adam",
+    "learner_device": "cpu",
+    "cpu_threads": 1,
+    "exploration": {
+      "type": "OU",
+      "initial_sigma": 0.2,
+      "minimum_sigma": 0.02,
+      "decay_per_environment_step": 2e-05,
+      "evaluation_sigma": 0.0
+    },
+    "pilot_episodes": 64,
+    "budget_observations": [
+      200,
+      500,
+      1000
+    ],
+    "maximum_episodes_per_seed": 1000,
+    "selection": "minimum validation mean penalized completion steps, earlier checkpoint on ties"
+  },
+  "runtime": {
+    "entry": "chapter5_comm.runtime.CH5Runtime",
+    "navigation": "causal_d2_v1",
+    "map_transport": "own_history_v1",
+    "history_rule": "native",
+    "history_tie_seed": 11,
+    "early_brake": false,
+    "scan_first": false,
+    "command_override": null,
+    "horizon": 8,
+    "candidate_count": 4,
+    "map_token_count": 32,
+    "plant": "native_ch3",
+    "neural_communication": false,
+    "checkpoint": null
+  },
+  "channel": {
+    "name": "reliable_reference",
+    "capacity_bits": 65536,
+    "refill_bits": 16384,
+    "rate_bps": 1000000,
+    "sound_speed": 1500,
+    "dt": 0.2,
+    "loss_probability": 0.0,
+    "delay_steps": 0,
+    "jitter_steps": 0,
+    "burst_start_probability": 0.0,
+    "burst_length": 4,
+    "burst_loss_probability": 0.8
+  },
+  "training_seeds": [
+    2729,
+    3733,
+    4751
+  ],
+  "seed_policy": {
+    "physical": "scenario_seed",
+    "channel": "scenario_seed + 7919",
+    "initialization": "training_seed",
+    "sampling": "independent stream per training_seed",
+    "exploration": "independent stream per training_seed",
+    "evaluation": "fixed physical and channel seeds; exploration disabled",
+    "shared_training_scene_pool": true
+  },
+  "scene_groups": {
+    "train": {
+      "start_seed": 7100000,
+      "count": 1000,
+      "role": "train",
+      "purpose": "shared training geometry; independent initialization and sampling"
+    },
+    "validation": {
+      "start_seed": 7200000,
+      "count": 32,
+      "role": "eval",
+      "purpose": "development configuration and checkpoint selection"
+    },
+    "baseline_admission": {
+      "start_seed": 7300000,
+      "count": 100,
+      "role": "eval",
+      "purpose": "one-time frozen task policy admission"
+    },
+    "link_fault_development": {
+      "start_seed": 7400000,
+      "count": 24,
+      "role": "eval",
+      "purpose": "communication degradation after task admission"
+    }
+  },
+  "scene_manifest": "configs/chapter5/nominal_maddpg_scenes.json",
+  "exclusion_manifest": "provenance/ch5_standard_maddpg_20261125/history_exclusion.json",
+  "formal_communication_test": {
+    "status": "NOT_REGISTERED",
+    "scenes": 0
+  },
+  "stage_status": {
+    "completed_steps": [
+      1
+    ],
+    "training_enabled": false,
+    "rollouts_enabled": false,
+    "optimizer_updates_allowed": 0,
+    "networks_implemented": false,
+    "runtime_validated": false,
+    "learner_update_validated": false,
+    "nominal_performance_verified": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "command": "python -B -m chapter5_comm.nominal_maddpg",
+  "exit_code": 0,
+  "source_files_verified": 292,
+  "source_tree_sha256": "9104473a7f55caa04643a1e3ed2fd85994fa28fc4c4d50dbf96d4533cea57593",
+  "tested_git_tree_before_this_receipt": "6a49ab5dafed056ccb3bbdb7d48e6c1b766d31d9",
+  "checkout": "E:\\gym\\code\\WORKSPACE\\_ch5_step1_checkout_20261125",
+  "source_archive_sha256": "ddac42b9cc6a5a76f175af1f36d9f3179709c077382b07ee150fff300e78b164",
+  "task_rollouts": 0,
+  "optimizer_updates": 0,
+  "standalone_git_snapshot": true,
+  "sibling_runtime_imports": false,
+  "whitespace_check": {
+    "passed": true,
+    "crlf_preserved": true,
+    "existing_eof_blank_preserved": "checks/test_ch5_history_rules.py"
+  },
+  "partial_long_path_extraction": {
+    "path": "E:\\gym\\code\\WORKSPACE\\CH5-Research\\current\\AUV-Thesis-CH5-CommRL\\outputs\\chapter5\\audits\\standard_maddpg_step1_20261125\\staged_repository",
+    "status": "REVIEW_REQUIRED; retained incomplete audit copy, do not use as runtime"
+  }
+}

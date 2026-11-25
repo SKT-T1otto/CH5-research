@@ -1,0 +1,210 @@
+{
+  "schema": "auv.ch4.nominal_maddpg.v1",
+  "date": "2026-11-25",
+  "task_reference": {
+    "path": "configs/b2.json",
+    "sha256": "41e46d4d9ae35f7808d3bb82ae859f83117580013f8c2e69d93f4b83203dce48"
+  },
+  "task": {
+    "profile": "M20_MOVING_UNKNOWN_MULTI",
+    "max_steps": 400,
+    "failure_penalty_steps": 100,
+    "agents": 4,
+    "role_order": [
+      "search_fast",
+      "search_balanced",
+      "search_precise",
+      "executor"
+    ],
+    "observation_dim": 28,
+    "action_dim": 3,
+    "critic_input_dim": 124,
+    "dt": 0.2,
+    "gamma": 0.95,
+    "residual_scale_search": 0.2,
+    "residual_scale_executor": 0.15,
+    "planner_protocol": "d2_v1",
+    "reward_objective": "team_mean_v1",
+    "task_protocol": "collision_terminal_v1",
+    "collision_detection_revision": "segment_closed_aabb_v1",
+    "terminal_reward_revision": "team_failure_override_v1",
+    "collision_terminal_reward": -2.0,
+    "waypoint_reward_timing": "arrival_before_reward_v1",
+    "repairs": {
+      "waypoint_arrival": true,
+      "inactive_actor": true,
+      "hold_residual": true
+    }
+  },
+  "plant": {
+    "law": "linear",
+    "beta_m_per_s": 0.1,
+    "drag_multipliers": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "horizontal_thrust_multipliers": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "lag_memory_coefficient": 0.15,
+    "actuator_delay_steps": 0,
+    "estimator_delay_steps": 0,
+    "noise": "N0",
+    "extra_vertical_bias_m_per_s2": 0.0,
+    "water_field": "beta * (sin(0.25*y), cos(0.22*x))"
+  },
+  "algorithm": {
+    "name": "MADDPG",
+    "revision": "ch4.maddpg.single_critic.v1",
+    "actors": 4,
+    "critics": 4,
+    "critics_per_vehicle": 1,
+    "decentralized_actor_input_dim": 28,
+    "centralized_critic_input_dim": 124,
+    "actor_hidden": [
+      128,
+      128
+    ],
+    "critic_hidden": [
+      256,
+      256
+    ],
+    "input_normalization": "LayerNorm",
+    "actor_output": "tanh",
+    "critic_loss": "mse",
+    "target_critic_reduction": "single",
+    "target_value_clip": null,
+    "target_action_noise": 0.0,
+    "actor_other_actions": "replay_applied_actions",
+    "actor_regularization": 0.0,
+    "actor_sample_mask": "execution_gate_open",
+    "replay_sampling": "uniform",
+    "replay_reward_normalization": false,
+    "policy_sharing": false,
+    "actor_truth_parameters_visible": false,
+    "actor_privileged_state_visible": false
+  },
+  "learning": {
+    "batch_size": 128,
+    "replay_capacity": 500000,
+    "warmup_steps": 256,
+    "update_frequency": 4,
+    "updates_per_train": 2,
+    "gamma": 0.95,
+    "tau": 0.005,
+    "actor_lr": 0.001,
+    "critic_lr": 0.0005,
+    "optimizer": "Adam",
+    "learner_device": "cpu",
+    "cpu_threads": 1,
+    "exploration": {
+      "type": "OU",
+      "initial_sigma": 0.2,
+      "minimum_sigma": 0.02,
+      "decay_per_environment_step": 2e-05,
+      "evaluation_sigma": 0.0
+    },
+    "pilot_episodes": 64,
+    "budget_observations": [
+      200,
+      500,
+      1000
+    ],
+    "maximum_episodes_per_seed": 1000,
+    "selection": "minimum validation mean penalized completion steps, earlier checkpoint on ties"
+  },
+  "training_seeds": [
+    2729,
+    3733,
+    4751
+  ],
+  "scene_groups": {
+    "train": {
+      "start_seed": 6100000,
+      "count": 1000,
+      "role": "train",
+      "purpose": "nominal training transitions only"
+    },
+    "validation": {
+      "start_seed": 6200000,
+      "count": 32,
+      "role": "eval",
+      "purpose": "configuration and checkpoint selection"
+    },
+    "nominal_admission": {
+      "start_seed": 6300000,
+      "count": 100,
+      "role": "eval",
+      "purpose": "one-time frozen baseline admission"
+    },
+    "mismatch_development": {
+      "start_seed": 6400000,
+      "count": 24,
+      "role": "eval",
+      "purpose": "paired mismatch variance and phase frequency"
+    },
+    "mismatch_confirmation_reserve": {
+      "start_seed": 6500000,
+      "count": 256,
+      "role": "eval",
+      "purpose": "unopened candidates, final size locked after mismatch development"
+    }
+  },
+  "scene_manifest": "configs/ch4/nominal_maddpg_scenes.json",
+  "nominal_references": {
+    "primary": "relative_water_nominal",
+    "regression": "native_ch3",
+    "native_performance_required": false
+  },
+  "admission": {
+    "scenes": 100,
+    "mean_seed_success_at_least": 0.6,
+    "each_seed_success_at_least": 0.5,
+    "d2_paired_cost_improvement_ci_lower_above": 0.0,
+    "each_seed_search_window_rate_at_least": 0.8,
+    "each_seed_executor_window_rate_at_least": 0.4,
+    "independent_unit": "physical_scene",
+    "confidence_level": 0.95,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 6536000,
+    "seed_variability_reported_separately": true
+  },
+  "mismatch_gate": {
+    "minimum_mean_D_steps": 5.0,
+    "ci_lower_above": 0.0,
+    "confidence_level": 0.95,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 6636000,
+    "sample_size_rule": "max(24, ceil((1.96 * development_scene_paired_sd / 2.5)^2))",
+    "confirmation_sample_size_locked": false,
+    "confirmation_reserve_is_candidate_only": true,
+    "overflow": "register additional independent candidates before confirmation, or report insufficient precision",
+    "all_training_seeds_reported": true
+  },
+  "stage_status": {
+    "completed_steps": [
+      1,
+      2
+    ],
+    "training_enabled": false,
+    "rollouts_enabled": false,
+    "optimizer_updates_allowed": 0,
+    "runtime_validated": false,
+    "learner_update_validated": false,
+    "nominal_performance_verified": false
+  },
+  "module_boundaries": {
+    "task_runtime": "chapter3_bser/learning/runtime.py",
+    "task_reference": "configs/b2.json",
+    "nominal_plant": "experiments/ch4_work1_recoverability/plant_adapter.py",
+    "network_construction": "chapter4_interval_robust/nominal_maddpg/learner.py",
+    "scenario_registry": "chapter4_interval_robust/nominal_maddpg/scenarios.py",
+    "source_registration": "chapter4_interval_robust/nominal_maddpg/provenance.py",
+    "verification_entry": "chapter4_interval_robust/nominal_maddpg/verify.py"
+  }
+}
