@@ -1,0 +1,17 @@
+{
+  "schema": "ch5.nominal_maddpg.linux_pilot.v1",
+  "training_seeds": [2729, 3733, 4751],
+  "episodes_per_seed": 64,
+  "max_train_team_steps_per_seed": 25600,
+  "validation_checkpoints": [0, 16, 32, 48, 64],
+  "validation_scenes": 32,
+  "selection": ["max_success_count", "min_collision_count", "max_mean_team_undiscounted_return", "earliest_episode"],
+  "trained_candidates": [16, 32, 48, 64],
+  "min_seeds_with_strict_success_gain": 2,
+  "order_seed_offset": 501,
+  "sampling_seed_offset": 502,
+  "exploration_seed_offset": 503,
+  "ch4_collection_config_sha256": "ec5d118f7b12c7d8a126666994007602c13c88190b665becdd27f29d2d31bb71",
+  "exploration": {"initial_sigma": 0.2, "minimum_sigma": 0.02, "decay_per_environment_step": 0.00002, "theta": 0.15, "dt": 1.0, "mean": 0.0},
+  "continuation_milestones_cumulative_only_after_pass": [200, 500, 1000]
+}

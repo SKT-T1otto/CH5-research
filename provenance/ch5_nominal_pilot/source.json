@@ -1,0 +1,16 @@
+{
+  "schema": "ch5.pilot.source.v1",
+  "parent_sha256": "1f00d0a7eded67b4b96564178d005db21b5720fc827c2d238dc666e54993ccfe",
+  "files": {
+    "chapter5_comm/nominal_maddpg/networks.py": "564d2ff5cbd5e7c2f553700eeffb63025e82d83348c1bd8186f2da8fda46b911",
+    "chapter5_comm/nominal_maddpg/learner.py": "ea234b3437134c4a7258dca07b30621b6b816622c14ad9e15a9b7ad8e76af7de",
+    "chapter5_comm/nominal_maddpg/replay.py": "4c3b518cdcba0acfd39e44d7842ecaeb57a8f45482e754e9ed284fbe93ad1c7f",
+    "chapter5_comm/nominal_maddpg/runtime.py": "9786921357713d9946d203529c946f41c51cbb34b9f69fcf476c1f62e0660d2a",
+    "chapter5_comm/nominal_maddpg/checkpoint.py": "8cd6a6e3badb948c3b3b2958a6361253e9553680f30bf5451486cd69cfd10075",
+    "chapter5_comm/nominal_maddpg/exploration.py": "669bb28a4eb64a84b8b53afc84705e711f54497284ffbc4986a0e69e7321f8a1",
+    "tools/ch5_nominal_pilot_train.py": "51b238cfe47ff68dbd9c50cf6112d832c1d6ddf614fe79f595a3efd9f76525e4",
+    "tools/ch5_nominal_pilot.py": "3bd3eeed7d253d26d3d36eb0a70d8ca8866784e66244426db07de784f84c5bf3",
+    "provenance/ch5_nominal_pilot/protocol.json": "90d33594495cdb2c9114ff8c119d7039e5b8c35a713b72be50642e2d7262bec6",
+    "scripts/ch5_nominal_pilot.sh": "5a00e6aa01f3e0b917087267b74a803b9aec43b57df206cf9eab46baf54720d6"
+  }
+}
