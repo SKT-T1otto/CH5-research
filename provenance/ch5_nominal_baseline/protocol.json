@@ -1,0 +1,22 @@
+{
+  "schema": "ch5.nominal.baseline.v2",
+  "training_seeds": [2729, 3733, 4751],
+  "stage_limits": [200, 500, 1000],
+  "validation_interval": 20,
+  "validation_count": 32,
+  "actor_lr": 0.0003,
+  "exploration_decay_per_step": 0.000002,
+  "stable_validation_points": 5,
+  "stable_success_range_count": 2,
+  "stable_return_range_relative": 0.10,
+  "stable_return_scale_floor": 1.0,
+  "strong_validation_successes": 29,
+  "weak_validation_successes": 26,
+  "maximum_validation_collisions": 1,
+  "required_strong_seeds": 2,
+  "admission_scenes": 100,
+  "admission_min_successes": 90,
+  "admission_max_collisions": 5,
+  "selection": ["max_success_count", "min_collision_count", "max_mean_team_undiscounted_return", "earliest_episode"],
+  "early_stage_stop": "finish requested stage; inspect report before raising cumulative budget"
+}

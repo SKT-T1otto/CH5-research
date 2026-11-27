@@ -1,0 +1,8 @@
+{
+  "files": {
+    "tools/ch5_nominal_baseline.py": "0e60112978cbc575f31452c1f921bc0efc2f7b1184b3034fd3c4e0039e416c63",
+    "scripts/ch5_nominal_baseline.sh": "002bc085fd703b55f28e993396ec38f465dcf5920048616a33bd50c4e9852dd7",
+    "provenance/ch5_nominal_baseline/protocol.json": "862c656dd555e1b0f4974ddf596296e9c1848a005f82b557901be5846f97eb02",
+    "provenance/ch5_nominal_pilot/source.json": "5b328e3992353b39c80758f8fd0b13d73854d04c3b577562a6aae1440e3e6e72"
+  }
+}
